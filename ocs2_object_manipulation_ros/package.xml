@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ocs2_cartpole_ros</name>
+  <name>ocs2_object_manipulation_ros</name>
   <version>0.0.0</version>
-  <description>The ocs2_cartpole_ros package</description>
+  <description>The ocs2_object_manipulation_ros package</description>
 
-  <maintainer email="farbod.farshidian@gmail.com">Farbod Farshidian</maintainer>
-  <maintainer email="jcarius@ethz.ch">Jan Carius</maintainer>
-  <maintainer email="rgrandia@ethz.ch">Ruben Grandia</maintainer>
+  <maintainer email="somboles@usc.edu">Mohsen Sombolestan</maintainer>
 
   <license>TODO</license>
 
@@ -20,7 +18,7 @@
   <depend>ocs2_mpc</depend>
   <depend>ocs2_ros_interfaces</depend>
   <depend>ocs2_robotic_tools</depend>
-  <depend>ocs2_cartpole</depend>
+  <depend>ocs2_object_manipulation</depend>
   <depend>robot_state_publisher</depend>
   <depend>ocs2_robotic_assets</depend>
   

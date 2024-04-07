@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ocs2_cartpole_ros)
+project(ocs2_object_manipulation_ros)
 
 # Generate compile_commands.json for clang tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -10,7 +10,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   ocs2_mpc
   ocs2_ros_interfaces
   ocs2_robotic_tools
-  ocs2_cartpole
+  ocs2_object_manipulation
   ocs2_robotic_assets
 )
 
@@ -52,25 +52,25 @@ include_directories(
 )
 
 # Mpc node
-add_executable(cartpole_mpc
-  src/CartpoleMpcNode.cpp
+add_executable(object_mpc
+  src/ObjectMpcNode.cpp
 )
-add_dependencies(cartpole_mpc
+add_dependencies(object_mpc
   ${catkin_EXPORTED_TARGETS}
 )
-target_link_libraries(cartpole_mpc
+target_link_libraries(object_mpc
   ${catkin_LIBRARIES}
 )
 
 # Dummy node
-add_executable(cartpole_dummy_test
-  src/DummyCartpoleNode.cpp
-  src/CartpoleDummyVisualization.cpp
+add_executable(object_dummy_test
+  src/DummyObjectNode.cpp
+  src/ObjectDummyVisualization.cpp
 )
-add_dependencies(cartpole_dummy_test
+add_dependencies(object_dummy_test
   ${catkin_EXPORTED_TARGETS}
 )
-target_link_libraries(cartpole_dummy_test
+target_link_libraries(object_dummy_test
   ${catkin_LIBRARIES}
 )
 
@@ -83,8 +83,8 @@ if(cmake_clang_tools_FOUND)
   message(STATUS "Running clang tooling.")
   add_clang_tooling(
     TARGETS
-        cartpole_mpc
-        cartpole_dummy_test
+        object_mpc
+        object_dummy_test
     SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include
     CT_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
     CT_HEADER_EXCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/generated
@@ -99,7 +99,7 @@ endif(cmake_clang_tools_FOUND)
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-install(TARGETS cartpole_mpc cartpole_dummy_test
+install(TARGETS object_mpc object_dummy_test
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY launch rviz
