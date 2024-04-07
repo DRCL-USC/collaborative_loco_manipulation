@@ -41,55 +41,55 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ocs2_ddp/SLQ.h>
 #include <ocs2_oc/synchronized_module/SolverObserver.h>
 
-#include "ocs2_cartpole/CartPoleInterface.h"
-#include "ocs2_cartpole/package_path.h"
+#include "ocs2_object_manipulation/ObjectInterface.h"
+#include "ocs2_object_manipulation/package_path.h"
 
 using namespace ocs2;
-using namespace cartpole;
+using namespace object_manipulation;
 
 enum class PenaltyType {
   SlacknessSquaredHingePenalty,
   ModifiedRelaxedBarrierPenalty,
 };
 
-class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, PenaltyType>> {
+class TestObject : public testing::TestWithParam<std::tuple<ddp::Algorithm, PenaltyType>> {
  protected:
   static constexpr scalar_t timeHorizon = 15.0;
   static constexpr scalar_t goalViolationTolerance = 1e-1;
   static constexpr scalar_t constraintViolationTolerance = 1e-1;
 
-  TestCartpole() {
+  TestObject() {
     // interface
-    taskFile = ocs2::cartpole::getPath() + "/config/mpc/task.info";
-    const std::string libFolder = ocs2::cartpole::getPath() + "/auto_generated";
-    cartPoleInterfacePtr.reset(new CartPoleInterface(taskFile, libFolder, false /*verbose*/));
+    taskFile = ocs2::object_manipulation::getPath() + "/config/mpc/task.info";
+    const std::string libFolder = ocs2::object_manipulation::getPath() + "/auto_generated";
+    objectInterfacePtr.reset(new ObjectInterface(taskFile, libFolder, false /*verbose*/));
 
     // Since the problem only uses final cost for swing-up, the final cost should be scaled proportional to
     // the increase of time horizon. We fist remove the final cost and then add a scaled version
     const std::string finalCostName = "finalCost";
-    if (!cartPoleInterfacePtr->optimalControlProblem().finalCostPtr->erase(finalCostName)) {
-      throw std::runtime_error("[TestCartpole::TestCartpole]: " + finalCostName + " was not found!");
+    if (!objectInterfacePtr->optimalControlProblem().finalCostPtr->erase(finalCostName)) {
+      throw std::runtime_error("[TestObject::Object]: " + finalCostName + " was not found!");
     }
     auto createFinalCost = [&]() {
       matrix_t Qf(STATE_DIM, STATE_DIM);
       loadData::loadEigenMatrix(taskFile, "Q_final", Qf);
-      Qf *= (timeHorizon / cartPoleInterfacePtr->mpcSettings().timeHorizon_);  // scale cost
+      Qf *= (timeHorizon / objectInterfacePtr->mpcSettings().timeHorizon_);  // scale cost
       return std::make_unique<QuadraticStateCost>(Qf);
     };
-    cartPoleInterfacePtr->optimalControlProblem().finalCostPtr->add(finalCostName, createFinalCost());
+    objectInterfacePtr->optimalControlProblem().finalCostPtr->add(finalCostName, createFinalCost());
 
     // remove InputLimits as it will be added later in each test
-    inputLimitsConstraint = popInequalityLagrangian(inputLimitsName, cartPoleInterfacePtr->optimalControlProblem());
+    inputLimitsConstraint = popInequalityLagrangian(inputLimitsName, objectInterfacePtr->optimalControlProblem());
 
     // initial command
     initTargetTrajectories.timeTrajectory.push_back(0.0);
-    initTargetTrajectories.stateTrajectory.push_back(cartPoleInterfacePtr->getInitialTarget());
-    initTargetTrajectories.inputTrajectory.push_back(vector_t::Zero(ocs2::cartpole::INPUT_DIM));
+    initTargetTrajectories.stateTrajectory.push_back(objectInterfacePtr->getInitialTarget());
+    initTargetTrajectories.inputTrajectory.push_back(vector_t::Zero(ocs2::object_manipulation::INPUT_DIM));
   }
 
   std::unique_ptr<GaussNewtonDDP> getAlgorithm() const {
     const auto algorithm = std::get<0>(GetParam());
-    auto ddpSettings = cartPoleInterfacePtr->ddpSettings();
+    auto ddpSettings = objectInterfacePtr->ddpSettings();
     ddpSettings.algorithm_ = algorithm;
     ddpSettings.maxNumIterations_ = 100;
     ddpSettings.minRelCost_ = 1e-12;  // to avoid early termination
@@ -98,17 +98,17 @@ class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, Pe
 
     switch (algorithm) {
       case ddp::Algorithm::SLQ:
-        return std::make_unique<SLQ>(std::move(ddpSettings), cartPoleInterfacePtr->getRollout(),
+        return std::make_unique<SLQ>(std::move(ddpSettings), objectInterfacePtr->getRollout(),
                                      createOptimalControlProblem(PenaltyType::ModifiedRelaxedBarrierPenalty),
-                                     cartPoleInterfacePtr->getInitializer());
+                                     objectInterfacePtr->getInitializer());
 
       case ddp::Algorithm::ILQR:
-        return std::make_unique<ILQR>(std::move(ddpSettings), cartPoleInterfacePtr->getRollout(),
+        return std::make_unique<ILQR>(std::move(ddpSettings), objectInterfacePtr->getRollout(),
                                       createOptimalControlProblem(PenaltyType::ModifiedRelaxedBarrierPenalty),
-                                      cartPoleInterfacePtr->getInitializer());
+                                      objectInterfacePtr->getInitializer());
 
       default:
-        throw std::runtime_error("[TestCartpole::getAlgorithm] undefined algorithm");
+        throw std::runtime_error("[TestObject::getAlgorithm] undefined algorithm");
     }
   }
 
@@ -131,12 +131,12 @@ class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, Pe
       }
 
       default:
-        throw std::runtime_error("[TestCartpole::getPenalty] undefined penaltyType");
+        throw std::runtime_error("[TestObject::getPenalty] undefined penaltyType");
     }
   }
 
   OptimalControlProblem createOptimalControlProblem(PenaltyType penaltyType) const {
-    OptimalControlProblem problem = cartPoleInterfacePtr->getOptimalControlProblem();
+    OptimalControlProblem problem = objectInterfacePtr->getOptimalControlProblem();
     problem.inequalityLagrangianPtr->add(inputLimitsName,
                                          create(std::unique_ptr<StateInputConstraint>(inputLimitsConstraint->clone()), getPenalty()));
     return problem;
@@ -145,12 +145,12 @@ class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, Pe
   std::unique_ptr<StateInputConstraint> popInequalityLagrangian(const std::string& name, OptimalControlProblem& ocp) const {
     auto termLagrangianPtr = ocp.inequalityLagrangianPtr->extract(name);
     if (termLagrangianPtr == nullptr) {
-      throw std::runtime_error("[TestCartpole::popInequalityLagrangian]: " + name + " was not found!");
+      throw std::runtime_error("[TestObject::popInequalityLagrangian]: " + name + " was not found!");
     }
 
     auto termStateInpuLagrangianPtr = dynamic_cast<StateInputAugmentedLagrangian*>(termLagrangianPtr.get());
     if (termStateInpuLagrangianPtr == nullptr) {
-      throw std::runtime_error("[TestCartpole::popInequalityLagrangian]: term " + name + " is not of type StateInputAugmentedLagrangian!");
+      throw std::runtime_error("[TestObject::popInequalityLagrangian]: term " + name + " is not of type StateInputAugmentedLagrangian!");
     }
 
     return std::unique_ptr<StateInputConstraint>(termStateInpuLagrangianPtr->get().clone());
@@ -168,7 +168,7 @@ class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, Pe
 
   void testFinalState(const PrimalSolution& primalSolution) const {
     const auto& finalState = primalSolution.stateTrajectory_.back();
-    const auto& desiredState = cartPoleInterfacePtr->getInitialTarget();
+    const auto& desiredState = objectInterfacePtr->getInitialTarget();
     EXPECT_NEAR(finalState(0), desiredState(0), goalViolationTolerance) << "Pole final angle is not " + std::to_string(desiredState(0));
     EXPECT_NEAR(finalState(1), desiredState(1), goalViolationTolerance) << "Cart final position is not " + std::to_string(desiredState(1));
     EXPECT_NEAR(finalState(2), desiredState(2), goalViolationTolerance) << "Pole final velocity is not " + std::to_string(desiredState(2));
@@ -177,21 +177,21 @@ class TestCartpole : public testing::TestWithParam<std::tuple<ddp::Algorithm, Pe
 
   const std::string inputLimitsName = "InputLimits";
   TargetTrajectories initTargetTrajectories;
-  std::unique_ptr<CartPoleInterface> cartPoleInterfacePtr;
+  std::unique_ptr<ObjectInterface> objectInterfacePtr;
 
  private:
   std::string taskFile;
   std::unique_ptr<StateInputConstraint> inputLimitsConstraint;
 };
 
-constexpr scalar_t TestCartpole::timeHorizon;
-constexpr scalar_t TestCartpole::goalViolationTolerance;
-constexpr scalar_t TestCartpole::constraintViolationTolerance;
+constexpr scalar_t TestObject::timeHorizon;
+constexpr scalar_t TestObject::goalViolationTolerance;
+constexpr scalar_t TestObject::constraintViolationTolerance;
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-TEST_P(TestCartpole, testDDP) {
+TEST_P(TestObject, testDDP) {
   // construct solver
   auto ddpPtr = getAlgorithm();
 
@@ -207,7 +207,7 @@ TEST_P(TestCartpole, testDDP) {
   ddpPtr->addSolverObserver(std::move(inputLimitsObserverModulePtr));
 
   // run solver
-  ddpPtr->run(0.0, cartPoleInterfacePtr->getInitialState(), timeHorizon);
+  ddpPtr->run(0.0, objectInterfacePtr->getInitialState(), timeHorizon);
 
   // test final state
   testFinalState(ddpPtr->primalSolution(timeHorizon));
@@ -217,7 +217,7 @@ TEST_P(TestCartpole, testDDP) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /* Test name printed in gtest results */
-std::string testName(const testing::TestParamInfo<TestCartpole::ParamType>& info) {
+std::string testName(const testing::TestParamInfo<TestObject::ParamType>& info) {
   std::string name;
   name += ddp::toAlgorithmName(std::get<0>(info.param)) + "_";
 
@@ -236,7 +236,7 @@ std::string testName(const testing::TestParamInfo<TestCartpole::ParamType>& info
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-INSTANTIATE_TEST_CASE_P(TestCaseCartpole, TestCartpole,
+INSTANTIATE_TEST_CASE_P(TestCaseObject, TestObject,
                         testing::Combine(testing::ValuesIn({ddp::Algorithm::SLQ, ddp::Algorithm::ILQR}),
                                          testing::ValuesIn({PenaltyType::SlacknessSquaredHingePenalty,
                                                             PenaltyType::ModifiedRelaxedBarrierPenalty})),

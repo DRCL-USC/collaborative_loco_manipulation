@@ -30,8 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string>
 
-#include "ocs2_cartpole/CartPoleInterface.h"
-#include "ocs2_cartpole/dynamics/CartPoleSystemDynamics.h"
+#include "ocs2_object_manipulation/ObjectInterface.h"
+#include "ocs2_object_manipulation/dynamics/ObjectSystemDynamics.h"
 
 #include <ocs2_core/augmented_lagrangian/AugmentedLagrangian.h>
 #include <ocs2_core/constraint/LinearStateInputConstraint.h>
@@ -46,23 +46,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/filesystem/path.hpp>
 
 namespace ocs2 {
-namespace cartpole {
+namespace object_manipulation {
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-CartPoleInterface::CartPoleInterface(const std::string& taskFile, const std::string& libraryFolder, bool verbose) {
+ObjectInterface::ObjectInterface(const std::string& taskFile, const std::string& libraryFolder, bool verbose) {
   // check that task file exists
   boost::filesystem::path taskFilePath(taskFile);
   if (boost::filesystem::exists(taskFilePath)) {
-    std::cerr << "[CartPoleInterface] Loading task file: " << taskFilePath << "\n";
+    std::cerr << "[ObjectInterface] Loading task file: " << taskFilePath << "\n";
   } else {
-    throw std::invalid_argument("[CartPoleInterface] Task file not found: " + taskFilePath.string());
+    throw std::invalid_argument("[ObjectInterface] Task file not found: " + taskFilePath.string());
   }
   // create library folder if it does not exist
   boost::filesystem::path libraryFolderPath(libraryFolder);
   boost::filesystem::create_directories(libraryFolderPath);
-  std::cerr << "[CartPoleInterface] Generated library path: " << libraryFolderPath << "\n";
+  std::cerr << "[ObjectInterface] Generated library path: " << libraryFolderPath << "\n";
 
   // Default initial condition
   loadData::loadEigenMatrix(taskFile, "initialState", initialState_);
@@ -96,9 +96,9 @@ CartPoleInterface::CartPoleInterface(const std::string& taskFile, const std::str
   problem_.finalCostPtr->add("finalCost", std::make_unique<QuadraticStateCost>(Qf));
 
   // Dynamics
-  CartPoleParameters cartPoleParameters;
-  cartPoleParameters.loadSettings(taskFile, "cartpole_parameters", verbose);
-  problem_.dynamicsPtr.reset(new CartPoleSytemDynamics(cartPoleParameters, libraryFolder, verbose));
+  ObjectParameters objectParameters;
+  objectParameters.loadSettings(taskFile, "object_parameters", verbose);
+  problem_.dynamicsPtr.reset(new ObjectSytemDynamics(objectParameters, libraryFolder, verbose));
 
   // Rollout
   auto rolloutSettings = rollout::loadSettings(taskFile, "rollout", verbose);
@@ -114,7 +114,7 @@ CartPoleInterface::CartPoleInterface(const std::string& taskFile, const std::str
   };
   auto getConstraint = [&]() {
     constexpr size_t numIneqConstraint = 2;
-    const vector_t e = (vector_t(numIneqConstraint) << cartPoleParameters.maxInput_, cartPoleParameters.maxInput_).finished();
+    const vector_t e = (vector_t(numIneqConstraint) << objectParameters.maxInput_, objectParameters.maxInput_).finished();
     const vector_t D = (vector_t(numIneqConstraint) << 1.0, -1.0).finished();
     const matrix_t C = matrix_t::Zero(numIneqConstraint, STATE_DIM);
     return std::make_unique<LinearStateInputConstraint>(e, C, D);
@@ -122,8 +122,8 @@ CartPoleInterface::CartPoleInterface(const std::string& taskFile, const std::str
   problem_.inequalityLagrangianPtr->add("InputLimits", create(getConstraint(), getPenalty()));
 
   // Initialization
-  cartPoleInitializerPtr_.reset(new DefaultInitializer(INPUT_DIM));
+  objectInitializerPtr_.reset(new DefaultInitializer(INPUT_DIM));
 }
 
-}  // namespace cartpole
+}  // namespace object_manipulation
 }  // namespace ocs2

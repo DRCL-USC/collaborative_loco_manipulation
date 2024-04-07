@@ -33,13 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
 
-#include <ocs2_cartpole/CartPoleInterface.h>
-#include <ocs2_cartpole/definitions.h>
+#include <ocs2_object_manipulation/ObjectInterface.h>
+#include <ocs2_object_manipulation/definitions.h>
 
-#include "ocs2_cartpole_ros/CartpoleDummyVisualization.h"
+#include "ocs2_object_manipulation_ros/ObjectDummyVisualization.h"
 
 int main(int argc, char** argv) {
-  const std::string robotName = "cartpole";
+  const std::string robotName = "object";
 
   // task file
   std::vector<std::string> programArgs{};
@@ -54,35 +54,35 @@ int main(int argc, char** argv) {
   ros::NodeHandle nodeHandle;
 
   // Robot interface
-  const std::string taskFile = ros::package::getPath("ocs2_cartpole") + "/config/" + taskFileFolderName + "/task.info";
-  const std::string libFolder = ros::package::getPath("ocs2_cartpole") + "/auto_generated";
-  ocs2::cartpole::CartPoleInterface cartPoleInterface(taskFile, libFolder, false /*verbose*/);
+  const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/" + taskFileFolderName + "/task.info";
+  const std::string libFolder = ros::package::getPath("ocs2_object_manipulation") + "/auto_generated";
+  ocs2::object_manipulation::ObjectInterface objectInterface(taskFile, libFolder, false /*verbose*/);
 
   // MRT
   ocs2::MRT_ROS_Interface mrt(robotName);
-  mrt.initRollout(&cartPoleInterface.getRollout());
+  mrt.initRollout(&objectInterface.getRollout());
   mrt.launchNodes(nodeHandle);
 
   // Visualization
-  auto cartpoleDummyVisualization = std::make_shared<ocs2::cartpole::CartpoleDummyVisualization>(nodeHandle);
+  auto objectDummyVisualization = std::make_shared<ocs2::object_manipualtion::ObjectDummyVisualization>(nodeHandle);
 
   // Dummy loop
-  ocs2::MRT_ROS_Dummy_Loop dummyCartpole(mrt, cartPoleInterface.mpcSettings().mrtDesiredFrequency_,
-                                         cartPoleInterface.mpcSettings().mpcDesiredFrequency_);
-  dummyCartpole.subscribeObservers({cartpoleDummyVisualization});
+  ocs2::MRT_ROS_Dummy_Loop dummyObject(mrt, objectInterface.mpcSettings().mrtDesiredFrequency_,
+                                         objectInterface.mpcSettings().mpcDesiredFrequency_);
+  dummyObject.subscribeObservers({objectDummyVisualization});
 
   // initial state
   ocs2::SystemObservation initObservation;
-  initObservation.state = cartPoleInterface.getInitialState();
-  initObservation.input.setZero(ocs2::cartpole::INPUT_DIM);
+  initObservation.state = objectInterface.getInitialState();
+  initObservation.input.setZero(ocs2::object_manipulation::INPUT_DIM);
   initObservation.time = 0.0;
 
   // initial command
-  const ocs2::TargetTrajectories initTargetTrajectories({0.0}, {cartPoleInterface.getInitialTarget()},
-                                                        {ocs2::vector_t::Zero(ocs2::cartpole::INPUT_DIM)});
+  const ocs2::TargetTrajectories initTargetTrajectories({0.0}, {objectInterface.getInitialTarget()},
+                                                        {ocs2::vector_t::Zero(ocs2::object_manipualtion::INPUT_DIM)});
 
   // Run dummy (loops while ros is ok)
-  dummyCartpole.run(initObservation, initTargetTrajectories);
+  dummyObject.run(initObservation, initTargetTrajectories);
 
   return 0;
 }
