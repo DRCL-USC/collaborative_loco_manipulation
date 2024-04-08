@@ -27,12 +27,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#include "ocs2_cartpole_ros/CartpoleDummyVisualization.h"
+#include "ocs2_object_manipulation_ros/ObjectDummyVisualization.h"
 
 namespace ocs2 {
-namespace cartpole {
+namespace object_manipulation {
 
-void CartpoleDummyVisualization::update(const SystemObservation& observation, const PrimalSolution& policy, const CommandData& command) {
+void ObjectDummyVisualization::update(const SystemObservation& observation, const PrimalSolution& policy, const CommandData& command) {
   sensor_msgs::JointState joint_state;
   joint_state.header.stamp = ros::Time::now();
   joint_state.name.resize(2);
@@ -44,9 +44,9 @@ void CartpoleDummyVisualization::update(const SystemObservation& observation, co
   jointPublisher_.publish(joint_state);
 }
 
-void CartpoleDummyVisualization::launchVisualizerNode(ros::NodeHandle& nodeHandle) {
+void ObjectDummyVisualization::launchVisualizerNode(ros::NodeHandle& nodeHandle) {
   jointPublisher_ = nodeHandle.advertise<sensor_msgs::JointState>("joint_states", 1);
 }
 
-}  // namespace cartpole
+}  // namespace object_manipulation
 }  // namespace ocs2

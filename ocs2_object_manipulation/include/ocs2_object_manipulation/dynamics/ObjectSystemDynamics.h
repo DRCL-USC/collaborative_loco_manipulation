@@ -15,7 +15,7 @@ class ObjectSytemDynamics : public SystemDynamicsBaseAD {
     initialize(STATE_DIM, INPUT_DIM, "object_dynamics", libraryFolder, true, verbose);
   }
 
-  ~objectSytemDynamics() override = default;
+  ~ObjectSytemDynamics() override = default;
 
   ObjectSytemDynamics(const ObjectSytemDynamics& rhs) = default;
 
