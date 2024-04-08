@@ -1,6 +1,6 @@
 <launch>
     <arg name="rviz"       default="true" />
-    <arg name="multiplot"  default="true"/>
+    <arg name="multiplot"  default="false"/>
     <arg name="task_name"  default="mpc"/>
 
     <group if="$(arg rviz)">
