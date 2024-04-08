@@ -12,53 +12,41 @@ namespace object_manipulation {
 
 struct ObjectParameters {
   /** Constructor */
-  ObjectParameters() { computeInertiaTerms(); }
+  ObjectParameters() {  }
 
   void display() {
-    std::cerr << "Cart-pole parameters: "
+    std::cerr << "Object parameters: "
               << "\n";
-    std::cerr << "cartMass:   " << cartMass_ << "\n";
-    std::cerr << "poleMass:   " << poleMass_ << "\n";
-    std::cerr << "poleLength: " << poleLength_ << "\n";
-    std::cerr << "poleMoi:    " << poleMoi_ << "\n";
-    std::cerr << "maxInput:   " << maxInput_ << "\n";
-    std::cerr << "gravity:    " << gravity_ << "\n";
+    std::cerr << "Mass:   " << Mass_ << "\n";
+    std::cerr << "Inertia:   " << Inertia_ << "\n";
+    std::cerr << "rx: " << rx_ << "\n";
+    std::cerr << "ry:    " << ry_ << "\n";
   }
 
-  /** Loads the Cart-Pole's parameters. */
+  /** Loads the Object's parameters. */
   void loadSettings(const std::string& filename, const std::string& fieldName, bool verbose = true) {
     boost::property_tree::ptree pt;
     boost::property_tree::read_info(filename, pt);
     if (verbose) {
-      std::cerr << "\n #### Cart-pole Parameters:";
+      std::cerr << "\n #### Object Parameters:";
       std::cerr << "\n #### =============================================================================\n";
     }
-    loadData::loadPtreeValue(pt, cartMass_, fieldName + ".cartMass", verbose);
-    loadData::loadPtreeValue(pt, poleMass_, fieldName + ".poleMass", verbose);
-    loadData::loadPtreeValue(pt, poleLength_, fieldName + ".poleLength", verbose);
-    loadData::loadPtreeValue(pt, maxInput_, fieldName + ".maxInput", verbose);
-    loadData::loadPtreeValue(pt, gravity_, fieldName + ".gravity", verbose);
-    computeInertiaTerms();
+    loadData::loadPtreeValue(pt, Mass_, fieldName + ".Mass", verbose);
+    loadData::loadPtreeValue(pt, Inertia_, fieldName + ".Inertia", verbose);
+    loadData::loadPtreeValue(pt, rx_, fieldName + ".rx", verbose);
+    loadData::loadPtreeValue(pt, ry_, fieldName + ".ry", verbose);
     if (verbose) {
       std::cerr << " #### =============================================================================\n" << std::endl;
     }
   }
 
-  scalar_t cartMass_ = 1.0;       // [kg]
-  scalar_t poleMass_ = 1.0;       // [kg]
-  scalar_t poleLength_ = 1.0;     // [m]
-  scalar_t maxInput_ = 6.0;       // [N]
-  scalar_t gravity_ = 9.8;        // [m/s^2]
-  scalar_t poleHalfLength_ = -1;  // [m]
-  scalar_t poleMoi_ = -1;         // [kg*m^2]
-  scalar_t poleSteinerMoi_ = -1;  // [kg*m^2]
+  scalar_t Mass_ = 1.0;       // [kg]
+  scalar_t Inertia_ = 1.0;       // [kg*m^2]
+  scalar_t rx_ = 1.0;     // [m]
+  scalar_t ry_ = 6.0;       // [m]
 
  private:
-  void computeInertiaTerms() {
-    poleHalfLength_ = poleLength_ / 2.0;
-    poleMoi_ = 1.0 / 12.0 * poleMass_ * (poleLength_ * poleLength_);
-    poleSteinerMoi_ = poleMoi_ + poleMass_ * (poleHalfLength_ * poleHalfLength_);
-  }
+
 };
 
 }  // namespace object_manipulation

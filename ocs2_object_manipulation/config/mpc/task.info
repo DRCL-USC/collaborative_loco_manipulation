@@ -1,11 +1,10 @@
-; cartpole parameters
-cartpole_parameters
+; object parameters
+object_parameters
 {
-  cartMass     2.0
-  poleMass     0.2
-  poleLength   1.0
-  maxInput     5.0
-  gravity      9.81
+  Mass     2
+  Inertia  1
+  rx     0
+  ry     0
 }
 
 ; DDP settings
@@ -79,43 +78,53 @@ bounds_penalty_config
 ; initial state
 initialState
 {
-  (0,0) 3.14   ; theta
-  (1,0) 0.0    ; x
-  (2,0) 0.0    ; theta_dot
-  (3,0) 0.0    ; x_dot
+  (0,0) 0.0   ; x
+  (1,0) 0.0   ; y
+  (2,0) 0.0   ; theta
+  (3,0) 0.0   ; x_dot
+  (4,0) 0.0   ; y_dot
+  (5,0) 0.0   ; theta_dot
 }
 
 ; state weight matrix
 Q
 {
-  (0,0)  0.0   ; theta
-  (1,1)  0.0   ; x
-  (2,2)  0.0   ; theta_dot
+  (0,0)     ; x
+  (1,1)  0.0   ; y
+  (2,2)  0.0   ; theta
   (3,3)  0.0   ; x_dot
+  (4,4)  0.0   ; y_dot
+  (5,5)  0.0   ; theta_dot
 }
 
 
 ; control weight matrix
 R
 {
-  (0,0)  0.1
+  (0,0)  0.1   ; Fx
+  (1,1)  0.1   ; Fy
+  (2,2)  0.1   ; tau
 }
 
 
 ; final state weight matrix
 Q_final
 {
-  (0,0)  5.0  ; theta
-  (1,1)  1.0  ; x
-  (2,2)  1.0  ; theta_dot
-  (3,3)  1.0  ; x_dot
+  (0,0)  1.0   ; x
+  (1,1)  1.0   ; y
+  (2,2)  1.0   ; theta
+  (3,3)  0.1   ; x_dot
+  (4,4)  0.1   ; y_dot
+  (5,5)  0.1   ; theta_dot
 }
 
 ; final goal
 x_final
 {
-  (0,0)  0.0  ; theta
-  (1,0)  0.0  ; x
-  (2,0)  0.0  ; theta_dot
-  (3,0)  0.0  ; x_dot
+  (0,0) 1   ; x
+  (1,0) 1   ; y
+  (2,0) 0.1   ; theta
+  (3,0) 0.0   ; x_dot
+  (4,0) 0.0   ; y_dot
+  (5,0) 0.0   ; theta_dot
 }
