@@ -27,18 +27,17 @@ class ObjectSytemDynamics : public SystemDynamicsBaseAD {
     const ad_scalar_t sinTheta = sin(state(0));
 
     // Inertia tensor
-    Eigen::Matrix<ad_scalar_t, 2, 2> I;
-    I << static_cast<ad_scalar_t>(param_.poleSteinerMoi_), static_cast<ad_scalar_t>(param_.poleMass_ * param_.poleHalfLength_ * cosTheta),
-        static_cast<ad_scalar_t>(param_.poleMass_ * param_.poleHalfLength_ * cosTheta),
-        static_cast<ad_scalar_t>(param_.cartMass_ + param_.poleMass_);
+    Eigen::Matrix<ad_scalar_t, 3, 3> I;
+    I << static_cast<ad_scalar_t>(param_.Mass_), static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(0.0), 
+         static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(param_.Mass_), static_cast<ad_scalar_t>(0.0),
+         static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(param_.Inertia_);
 
     // RHS
-    Eigen::Matrix<ad_scalar_t, 2, 1> rhs(param_.poleMass_ * param_.poleHalfLength_ * param_.gravity_ * sinTheta,
-                                         input(0) + param_.poleMass_ * param_.poleHalfLength_ * pow(state(2), 2) * sinTheta);
+    Eigen::Matrix<ad_scalar_t, 3, 1> rhs(input(0), input(1), input(2));
 
     // dxdt
     ad_vector_t stateDerivative(STATE_DIM);
-    stateDerivative << state.tail<2>(), I.inverse() * rhs;
+    stateDerivative << state.tail<3>(), I.inverse() * rhs;
     return stateDerivative;
   }
 
