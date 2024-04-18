@@ -48,6 +48,11 @@ ObjectInterface::ObjectInterface(const std::string& taskFile, const std::string&
   mpcSettings_ = mpc::loadSettings(taskFile, "mpc", verbose);
 
   /*
+   * ReferenceManager & SolverSynchronizedModule
+   */
+  referenceManagerPtr_.reset(new ReferenceManager);
+
+  /*
    * Optimal control problem
    */
   // Cost
@@ -76,21 +81,21 @@ ObjectInterface::ObjectInterface(const std::string& taskFile, const std::string&
   rolloutPtr_.reset(new TimeTriggeredRollout(*problem_.dynamicsPtr, rolloutSettings));
 
   // Constraints
-  auto getPenalty = [&]() {
-    // one can use either augmented::SlacknessSquaredHingePenalty or augmented::ModifiedRelaxedBarrierPenalty
-    using penalty_type = augmented::SlacknessSquaredHingePenalty;
-    penalty_type::Config boundsConfig;
-    loadData::loadPenaltyConfig(taskFile, "bounds_penalty_config", boundsConfig, verbose);
-    return penalty_type::create(boundsConfig);
-  };
-  auto getConstraint = [&]() {
-    constexpr size_t numIneqConstraint = 6;
-    const vector_t e = (vector_t(numIneqConstraint) << 1000, -1000).finished();
-    const vector_t D = (vector_t(numIneqConstraint) << 1.0, -1.0).finished();
-    const matrix_t C = matrix_t::Zero(numIneqConstraint, STATE_DIM);
-    return std::make_unique<LinearStateInputConstraint>(e, C, D);
-  };
-  problem_.inequalityLagrangianPtr->add("InputLimits", create(getConstraint(), getPenalty()));
+  // auto getPenalty = [&]() {
+  //   // one can use either augmented::SlacknessSquaredHingePenalty or augmented::ModifiedRelaxedBarrierPenalty
+  //   using penalty_type = augmented::SlacknessSquaredHingePenalty;
+  //   penalty_type::Config boundsConfig;
+  //   loadData::loadPenaltyConfig(taskFile, "bounds_penalty_config", boundsConfig, verbose);
+  //   return penalty_type::create(boundsConfig);
+  // };
+  // auto getConstraint = [&]() {
+  //   constexpr size_t numIneqConstraint = 6;
+  //   const vector_t e = (vector_t(numIneqConstraint) << 1000, -1000).finished();
+  //   const vector_t D = (vector_t(numIneqConstraint) << 1.0, -1.0).finished();
+  //   const matrix_t C = matrix_t::Zero(numIneqConstraint, STATE_DIM);
+  //   return std::make_unique<LinearStateInputConstraint>(e, C, D);
+  // };
+  // problem_.inequalityLagrangianPtr->add("InputLimits", create(getConstraint(), getPenalty()));
 
   // Initialization
   objectInitializerPtr_.reset(new DefaultInitializer(INPUT_DIM));

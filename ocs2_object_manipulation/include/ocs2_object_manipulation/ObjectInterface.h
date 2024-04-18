@@ -6,6 +6,7 @@
 #include <ocs2_ddp/DDP_Settings.h>
 #include <ocs2_mpc/MPC_Settings.h>
 #include <ocs2_oc/rollout/TimeTriggeredRollout.h>
+#include <ocs2_oc/synchronized_module/ReferenceManager.h>
 #include <ocs2_robotic_tools/common/RobotInterface.h>
 
 // Object manipulation
@@ -45,6 +46,8 @@ class ObjectInterface final : public RobotInterface {
   OptimalControlProblem& optimalControlProblem() { return problem_; }
   const OptimalControlProblem& getOptimalControlProblem() const override { return problem_; }
 
+  std::shared_ptr<ReferenceManagerInterface> getReferenceManagerPtr() const override { return referenceManagerPtr_; }
+
   const RolloutBase& getRollout() const { return *rolloutPtr_; }
 
   const Initializer& getInitializer() const override { return *objectInitializerPtr_; }
@@ -54,6 +57,7 @@ class ObjectInterface final : public RobotInterface {
   mpc::Settings mpcSettings_;
 
   OptimalControlProblem problem_;
+  std::shared_ptr<ReferenceManager> referenceManagerPtr_;
 
   std::unique_ptr<RolloutBase> rolloutPtr_;
   std::unique_ptr<Initializer> objectInitializerPtr_;

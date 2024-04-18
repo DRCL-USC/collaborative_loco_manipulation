@@ -88,4 +88,67 @@
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 
+  <link name="prismatic_x_target">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
+    </inertial>
+  </link>
+
+  <joint name="x_target" type="prismatic">
+    <axis xyz="1 0 0"/>
+    <origin xyz="0.0 0.0 0.0"/>
+    <parent link="ground"/>
+    <child link="prismatic_x_target"/>
+    <limit effort="100000.0" lower="-150" upper="150" velocity="50"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <link name="prismatic_y_target">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
+    </inertial>
+  </link>
+
+  <joint name="y_target" type="prismatic">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0.0 0.0"/>
+    <parent link="prismatic_x_target"/>
+    <child link="prismatic_y_target"/>
+    <limit effort="100000.0" lower="-150" upper="150" velocity="50"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <link name="object_target">
+    <visual>
+      <geometry>
+        <box size="0.5 0.5 0.5"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+      <mass value="2"/>
+      <inertia ixx="0.0000001" ixy="0.0" ixz="0.0" iyy="0.01667" iyz="0.0" izz="0.0000001"/>
+    </inertial>
+     <collision>
+      <geometry>
+        <box size="0.5 0.5 0.5"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0.5"/>
+    </collision>
+  </link>
+
+  <joint name="theta_target" type="continuous">
+    <axis xyz="0 0 1"/>
+    <origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+    <parent link="prismatic_y_target"/>
+    <child link="object_target"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
 </robot>
