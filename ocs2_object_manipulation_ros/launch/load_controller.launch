@@ -1,0 +1,13 @@
+<launch>
+
+    <rosparam file="$(find ocs2_object_manipulation_ros)/config/object_controllers.yaml"
+        command="load" />
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen"
+        args="joint_state_controller
+        velocity_controller" />
+
+
+</launch>
+	
