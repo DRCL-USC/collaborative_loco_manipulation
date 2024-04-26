@@ -1,0 +1,14 @@
+<launch>
+    <arg name="model"      default="$(find ocs2_object_manipulation_ros)/urdf/object.xacro"/>
+    
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+    
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find ocs2_object_manipulation_ros)/launch/worlds/world_with_object.world"/>
+    </include>
+
+    <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"
+          args="-z 2 -param robot_description -urdf -model object" output="screen"/>  
+     -->
+</launch>
+	
