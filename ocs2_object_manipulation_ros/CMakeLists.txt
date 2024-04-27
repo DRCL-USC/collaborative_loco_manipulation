@@ -51,6 +51,16 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+# # Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/StateEstimation.cpp
+# )
+# target_link_libraries(${PROJECT_NAME}
+#         ${catkin_LIBRARIES}
+#         )
+
+# target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
+
 # Mpc node
 add_executable(object_mpc
   src/ObjectMpcNode.cpp
@@ -74,6 +84,16 @@ target_link_libraries(object_dummy_test
   ${catkin_LIBRARIES}
 )
 
+# State Estimation node
+add_executable(State_Estimation_node
+  src/StateEstimation_node.cpp
+)
+add_dependencies(State_Estimation_node
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(State_Estimation_node
+  ${catkin_LIBRARIES}
+)
 
 #########################
 ###   CLANG TOOLING   ###
