@@ -64,7 +64,6 @@
             </link>
 
             <link name="dummy">
-
                 <inertial>
                     <mass>0.005</mass>
                     <inertia>
@@ -76,12 +75,31 @@
                         <izz>0.0001</izz>
                     </inertia>
                 </inertial>
-
             </link>
 
-            <joint name="joint" type="fixed">
+            <link name="dummy_2">
+                <inertial>
+                    <mass>0.005</mass>
+                    <inertia>
+                        <ixx>0.0001</ixx>
+                        <ixy>0.0</ixy>
+                        <ixz>0.0</ixz>
+                        <iyy>0.001</iyy>
+                        <iyz>0.0</iyz>
+                        <izz>0.0001</izz>
+                    </inertia>
+                </inertial>
+            </link>
+
+            <joint name="joint_1" type="fixed">
                 <parent>object</parent>
                 <child>dummy</child>
+                <pose>0 0 0 0 0 0</pose>
+            </joint>
+
+            <joint name="joint_2" type="fixed">
+                <parent>object</parent>
+                <child>dummy_2</child>
                 <pose>0 0 0 0 0 0</pose>
             </joint>
 

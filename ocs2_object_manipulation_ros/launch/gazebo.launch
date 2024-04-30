@@ -1,14 +1,28 @@
 <launch>
-    <arg name="model"      default="$(find ocs2_object_manipulation_ros)/urdf/object.xacro"/>
-    
-    <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
-    
+    <arg name="gui"        default="false"/>
+    <arg name="rviz"       default="true" />
+    <arg name="multiplot"  default="false"/>
+    <arg name="task_name"  default="mpc"/>
+
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find ocs2_object_manipulation_ros)/launch/worlds/world_with_object.world"/>
+        <arg name="gui" value="$(arg gui)" />
     </include>
 
-    <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"
-          args="-z 2 -param robot_description -urdf -model object" output="screen"/>  
-     -->
+    <group if="$(arg rviz)">
+      <include file="$(find ocs2_object_manipulation_ros)/launch/visualize.launch"/>
+    </group>
+
+    <group if="$(arg multiplot)">
+      <include file="$(find ocs2_object_manipulation_ros)/launch/multiplot.launch" />
+    </group>
+
+    <node pkg="ocs2_object_manipulation_ros" type="object_mpc" name="object_mpc"
+            output="screen" args="$(arg task_name)" launch-prefix=""/>
+
+    <node pkg="ocs2_object_manipulation_ros" type="object_mrt" name="object_mrt"
+            output="screen" args="$(arg task_name)" launch-prefix=""/>
+    
+
 </launch>
 	

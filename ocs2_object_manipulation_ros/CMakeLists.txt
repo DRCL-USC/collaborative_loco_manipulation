@@ -72,6 +72,18 @@ target_link_libraries(object_mpc
   ${catkin_LIBRARIES}
 )
 
+# Mrt node
+add_executable(object_mrt
+  src/ObjectMrtNode.cpp
+  src/ObjectDummyVisualization.cpp
+)
+add_dependencies(object_mrt
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(object_mrt
+  ${catkin_LIBRARIES}
+)
+
 # Dummy node
 add_executable(object_dummy_test
   src/DummyObjectNode.cpp
@@ -85,13 +97,13 @@ target_link_libraries(object_dummy_test
 )
 
 # State Estimation node
-add_executable(State_Estimation_node
-  src/StateEstimation_node.cpp
+add_executable(apply_wrench_node
+  src/ApplyWrenchNode.cpp
 )
-add_dependencies(State_Estimation_node
+add_dependencies(apply_wrench_node
   ${catkin_EXPORTED_TARGETS}
 )
-target_link_libraries(State_Estimation_node
+target_link_libraries(apply_wrench_node
   ${catkin_LIBRARIES}
 )
 

@@ -22,6 +22,7 @@ namespace ocs2
             vector3_t v_body;
             vector3_t omega_world;
             vector3_t omega_body;
+            vector_t state;
         };
 
         class StateEstimation
@@ -30,6 +31,7 @@ namespace ocs2
             StateEstimation(){
             // Create a subscriber to the gazebo_model_state topic
             modelStateSub = nh.subscribe("/gazebo/model_states", 10, &StateEstimation::modelStateCallback, this);
+            object_data.state = vector_t::Zero(6);
         };
 
             void modelStateCallback(const gazebo_msgs::ModelStates &msg){
@@ -63,13 +65,19 @@ namespace ocs2
             object_data.omega_world(2) = msg.twist[model_index].angular.z;
 
             object_data.omega_body = object_data.rotmat * object_data.omega_world;
-            ROS_INFO("I heard: x =%f, y=%f, z=%f", msg.pose[model_index].position.x, msg.pose[model_index].position.y, msg.pose[model_index].position.z);
+
+            object_data.state << object_data.position(0), object_data.position(1), object_data.rpy(2),
+                                 object_data.v_world(0), object_data.v_world(1), object_data.omega_world(2);
+
+            // ROS_INFO("I heard: x =%f, y=%f, yaw=%f , vx=%f, vy=%f, omega=%f", 
+            // object_data.state[0], object_data.state[1], object_data.state[2], object_data.state[3], object_data.state[4], object_data.state[5]);
         };
             
+        StreamedData object_data;
+        
         private:
             ros::NodeHandle nh;
             ros::Subscriber modelStateSub;
-            StreamedData object_data;
         };
 
     } // namespace object_manipulation
