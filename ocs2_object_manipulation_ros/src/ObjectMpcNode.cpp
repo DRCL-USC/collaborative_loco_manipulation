@@ -28,7 +28,8 @@ int main(int argc, char** argv) {
   const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/" + taskFileFolderName + "/task.info";
   const std::string libFolder = ros::package::getPath("ocs2_object_manipulation") + "/auto_generated";
   ocs2::object_manipulation::ObjectInterface objectInterface(taskFile, libFolder, true /*verbose*/);
-// ROS ReferenceManager
+  
+  // ROS ReferenceManager
   auto rosReferenceManagerPtr = std::make_shared<ocs2::RosReferenceManager>(robotName, objectInterface.getReferenceManagerPtr());
   rosReferenceManagerPtr->subscribe(nodeHandle);
 

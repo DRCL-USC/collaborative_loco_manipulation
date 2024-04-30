@@ -30,21 +30,21 @@ int main(int argc, char **argv)
         wrench = observationPtr_->input;
 
         srv[0].request.body_name = "object::object";
-        srv[0].request.reference_frame = "object::object";
+        // srv[0].request.reference_frame = "object::object";
         // srv.request.reference_point = value3;
         srv[0].request.wrench.force.x = wrench(0);
         srv[0].request.start_time = ros::Time(0.0);
         srv[0].request.duration = ros::Duration(-1.0);
 
         srv[1].request.body_name = "object::dummy";
-        srv[1].request.reference_frame = "object::dummy";
+        // srv[1].request.reference_frame = "object::dummy";
         // srv.request.reference_point = value3;
         srv[1].request.wrench.force.y = wrench(1);
         srv[1].request.start_time = ros::Time(0.0);
         srv[1].request.duration = ros::Duration(-1.0);
 
         srv[2].request.body_name = "object::dummy_2";
-        srv[2].request.reference_frame = "object::dummy_2";
+        // srv[2].request.reference_frame = "object::dummy_2";
         // srv.request.reference_point = value3;
         srv[2].request.wrench.torque.z = wrench(2);
         srv[2].request.start_time = ros::Time(0.0);

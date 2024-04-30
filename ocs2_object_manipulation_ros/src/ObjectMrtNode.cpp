@@ -123,9 +123,9 @@ int main(int argc, char **argv)
                          nextObservation.mode);
     }
 
+    // Update MPC observation;
+    currentObservation.time = nextObservation.time;
     currentObservation.input = nextObservation.input;
-
-    // currentObservation = nextObservation;
     currentObservation.state = stateEstimation.object_data.state;
 
     // Publish observation if at the next step we want a new policy
