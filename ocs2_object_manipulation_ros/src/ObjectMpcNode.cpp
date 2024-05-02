@@ -39,6 +39,10 @@ int main(int argc, char** argv) {
                                objectInterface.getInitializer());                           
   mpc.getSolverPtr()->setReferenceManager(rosReferenceManagerPtr);
 
+  // auto obstacles = dynamic_cast<ocs2::object_manipulation::ObjectInterface&>(objectInterface).getObstacles();
+  // for (auto& obstacle : obstacles) {
+  //   mpc.getSolverPtr()->addSynchronizedModule(obstacle);
+  // }
   // observer for the input limits constraints
   // auto createStateInputBoundsObserver = [&]() {
   //   const std::string observingLagrangianTerm = "InputLimits";

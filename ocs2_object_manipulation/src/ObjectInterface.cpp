@@ -11,6 +11,8 @@
 #include <ocs2_core/initialization/DefaultInitializer.h>
 #include <ocs2_core/misc/LoadData.h>
 #include <ocs2_core/penalties/Penalties.h>
+#include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
+#include <ocs2_object_manipulation/SimpleObstacle.h>
 
 // Boost
 #include <boost/filesystem/operations.hpp>
@@ -89,13 +91,28 @@ ObjectInterface::ObjectInterface(const std::string& taskFile, const std::string&
   //   return penalty_type::create(boundsConfig);
   // };
   // auto getConstraint = [&]() {
-  //   constexpr size_t numIneqConstraint = 6;
-  //   const vector_t e = (vector_t(numIneqConstraint) << 1000, -1000).finished();
-  //   const vector_t D = (vector_t(numIneqConstraint) << 1.0, -1.0).finished();
+  //   constexpr size_t numIneqConstraint = 1;
+  //   const vector_t e = (vector_t(numIneqConstraint) << 1000).finished();
+  //   const vector_t D = (matrix_t(numIneqConstraint, STATE_DIM) << 1.0, 0.0, 0.0).finished();
   //   const matrix_t C = matrix_t::Zero(numIneqConstraint, STATE_DIM);
   //   return std::make_unique<LinearStateInputConstraint>(e, C, D);
   // };
-  // problem_.inequalityLagrangianPtr->add("InputLimits", create(getConstraint(), getPenalty()));
+  // problem_.inequalityLagrangianPtr->add("StateLimits", create(getConstraint(), getPenalty()));
+
+  // CBFs
+  // vector_t obstaclePos(2);
+  // obstaclePos << -3.5, -1.5;
+  // obstacles_.push_back(std::make_shared<ObstacleSimple>(obstaclePos, 1));
+
+  // for (int i = 0; i < obstacles_.size(); ++i) {
+  //   std::unique_ptr<CBF> cbfPtr(new CBF(*obstacles_[i]));
+  //   std::unique_ptr<PenaltyBase> penalty(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
+  //   // getOptimalControlProblem().softConstraintPtr->add(
+  //   //     "obstacle_" + std::to_string(i),
+  //   //     std::unique_ptr<StateInputCost>(new StateInputSoftConstraint(std::move(cbfPtr), std::move(penalty))));
+  //   getOptimalControlProblem().inequalityConstraintPtr->add(
+  //       "obstacle_" + std::to_string(i),(std::move(cbfPtr)));
+  // }
 
   // Initialization
   objectInitializerPtr_.reset(new DefaultInitializer(INPUT_DIM));

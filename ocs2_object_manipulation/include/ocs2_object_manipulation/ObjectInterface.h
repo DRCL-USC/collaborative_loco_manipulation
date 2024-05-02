@@ -12,6 +12,7 @@
 // Object manipulation
 #include "ocs2_object_manipulation/ObjectParameters.h"
 #include "ocs2_object_manipulation/definitions.h"
+#include <ocs2_object_manipulation/SimpleObstacle.h>
 
 namespace ocs2 {
 namespace object_manipulation {
@@ -52,6 +53,8 @@ class ObjectInterface final : public RobotInterface {
 
   const Initializer& getInitializer() const override { return *objectInitializerPtr_; }
 
+  std::vector<std::shared_ptr<ObstacleSimple>> getObstacles() const { return obstacles_; }
+  
  private:
   ddp::Settings ddpSettings_;
   mpc::Settings mpcSettings_;
@@ -64,6 +67,7 @@ class ObjectInterface final : public RobotInterface {
 
   vector_t initialState_{STATE_DIM};
   vector_t xFinal_{STATE_DIM};
+  std::vector<std::shared_ptr<ObstacleSimple>> obstacles_;
 };
 
 }  // namespace object_manipulation
