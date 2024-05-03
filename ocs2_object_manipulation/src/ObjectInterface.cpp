@@ -91,10 +91,20 @@ ObjectInterface::ObjectInterface(const std::string& taskFile, const std::string&
   //   return penalty_type::create(boundsConfig);
   // };
   // auto getConstraint = [&]() {
-  //   constexpr size_t numIneqConstraint = 1;
-  //   const vector_t e = (vector_t(numIneqConstraint) << 1000).finished();
-  //   const vector_t D = (matrix_t(numIneqConstraint, STATE_DIM) << 1.0, 0.0, 0.0).finished();
-  //   const matrix_t C = matrix_t::Zero(numIneqConstraint, STATE_DIM);
+  //   constexpr size_t numIneqConstraint = 6;
+  //   const vector_t e = (vector_t(numIneqConstraint) << 20, 20, 1, 1, 1, 1).finished();
+  //   const matrix_t D = (matrix_t(numIneqConstraint, INPUT_DIM) << 1.0, 0.0, 0.0,
+  //                                                                 -1.0, 0.0, 0.0,
+  //                                                                 0.0, 0.0, 0.0,
+  //                                                                 0.0, 0.0, 0.0,
+  //                                                                 0.0, 0.0, 0.0,
+  //                                                                 0.0, 0.0, 0.0).finished();
+  //   const matrix_t C = (matrix_t(numIneqConstraint, STATE_DIM) << 0, 0, 0, 0, 0, 0,
+  //                                                                 0, 0, 0, 0, 0, 0,
+  //                                                                 0, 0, 0, 1, 0, 0,
+  //                                                                 0, 0, 0, -1, 0, 0,
+  //                                                                 0, 0, 0, 0, 1, 0,
+  //                                                                 0, 0, 0, 0, -1, 0).finished();
   //   return std::make_unique<LinearStateInputConstraint>(e, C, D);
   // };
   // problem_.inequalityLagrangianPtr->add("StateLimits", create(getConstraint(), getPenalty()));

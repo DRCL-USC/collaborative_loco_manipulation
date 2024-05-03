@@ -5,14 +5,14 @@
   <!-- Launch RQT Multi-plot -->
   <node name="mpc_observation" pkg="rqt_multiplot" type="rqt_multiplot" 
     args="--multiplot-run-all --multiplot-config $(arg observation_config)"
-    output="screen"/>
+    output="screen" />
 
   <node name="mpc_metrics" pkg="rqt_multiplot" type="rqt_multiplot"
     args="--multiplot-run-all --multiplot-config $(arg metrics_config)"
-    output="screen"/>
+    output="screen" if="false"/>
 
   <!-- Launch Performance Indices Multi-plot -->
-  <include file="$(find ocs2_ros_interfaces)/launch/performance_indices.launch">
+  <!-- <include file="$(find ocs2_ros_interfaces)/launch/performance_indices.launch">
     <arg name="mpc_policy_topic_name"      value="object_mpc_policy"/>
-  </include>
+  </include> -->
 </launch>
