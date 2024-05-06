@@ -69,10 +69,10 @@ mpc
   mrtDesiredFrequency         400   ; [Hz]
 }
 
-bounds_penalty_config
+cbf_penalty_config
 {
-  scale                       0.1
-  stepSize                    1.0
+  mu                       1
+  delta                    0.5
 }
 
 ; initial state

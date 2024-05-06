@@ -113,14 +113,20 @@ namespace ocs2
       obstacles_.push_back((vector_t(3) << -3.5, -1.5, 0.75).finished());
       obstacles_.push_back((vector_t(3) << -2, -2, 0.75).finished());
 
+      boost::property_tree::ptree pt;
+      boost::property_tree::read_info(taskFile, pt);
+      RelaxedBarrierPenalty::Config boundsConfig;
+      loadData::loadPtreeValue(pt, boundsConfig.mu, "cbf_penalty_config.mu", verbose);
+      loadData::loadPtreeValue(pt, boundsConfig.delta, "cbf_penalty_config.delta", verbose);
+
       std::unique_ptr<PenaltyBase> ObstaclePenalty[2];
 
       for (int i = 0; i < obstacles_.size(); ++i)
       {
-        ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
+        ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(boundsConfig.mu, boundsConfig.delta)));
         problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
                                              std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(obstacles_[i]),
-                                                                                                std::move(ObstaclePenalty[i]))));                                                                                
+                                                                                                std::move(ObstaclePenalty[i]))));
       }
 
       // Initialization
