@@ -14,7 +14,6 @@
 #include <ocs2_core/penalties/Penalties.h>
 #include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
 #include <ocs2_core/soft_constraint/StateSoftConstraint.h>
-#include <ocs2_object_manipulation/SimpleObstacle.h>
 #include <ocs2_object_manipulation/CBFConstraint.h>
 
 // Boost
@@ -99,26 +98,29 @@ namespace ocs2
       // Constraints
 
       // Velocity constraint
-      const vector_t e = (vector_t(4) << 1, 1, 1, 1).finished();
+      const vector_t e = (vector_t(4) << 2, 2, 2, 2).finished();
       const matrix_t C = (matrix_t(4, STATE_DIM) << 0, 0, 0, 1, 0, 0,
                           0, 0, 0, -1, 0, 0,
                           0, 0, 0, 0, 1, 0,
                           0, 0, 0, 0, -1, 0)
                              .finished();
 
-      std::unique_ptr<PenaltyBase> penalty(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
-      // problem_.stateSoftConstraintPtr->add("VelocityConstraint", std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<LinearStateConstraint>(e, C), std::move(penalty))));
+      std::unique_ptr<PenaltyBase> VelocityPenalty = std::make_unique<RelaxedBarrierPenalty>(RelaxedBarrierPenalty::Config(0.1, 1e-3));
+      problem_.stateSoftConstraintPtr->add("VelocityConstraint", std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<LinearStateConstraint>(e, C), std::move(VelocityPenalty))));
 
       // CBFs
-      vector_t obstaclePos(3);
-      obstaclePos << -3.5, -1.5, 0.75;
-      obstacles_.push_back(obstaclePos);
+      std::vector<vector_t> obstacles_;
+      obstacles_.push_back((vector_t(3) << -3.5, -1.5, 0.75).finished());
+      obstacles_.push_back((vector_t(3) << -2, -2, 0.75).finished());
+
+      std::unique_ptr<PenaltyBase> ObstaclePenalty[2];
 
       for (int i = 0; i < obstacles_.size(); ++i)
       {
+        ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
         problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
                                              std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(obstacles_[i]),
-                                                                                                std::move(penalty))));
+                                                                                                std::move(ObstaclePenalty[i]))));                                                                                
       }
 
       // Initialization

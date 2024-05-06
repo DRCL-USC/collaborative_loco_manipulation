@@ -64,7 +64,6 @@ class ObjectInterface final : public RobotInterface {
 
   vector_t initialState_{STATE_DIM};
   vector_t xFinal_{STATE_DIM};
-  std::vector<vector_t> obstacles_;
 };
 
 }  // namespace object_manipulation
