@@ -12,7 +12,6 @@
 // Object manipulation
 #include "ocs2_object_manipulation/ObjectParameters.h"
 #include "ocs2_object_manipulation/definitions.h"
-#include <ocs2_object_manipulation/SimpleObstacle.h>
 
 namespace ocs2 {
 namespace object_manipulation {
