@@ -52,8 +52,6 @@ class ObjectInterface final : public RobotInterface {
   const RolloutBase& getRollout() const { return *rolloutPtr_; }
 
   const Initializer& getInitializer() const override { return *objectInitializerPtr_; }
-
-  std::vector<std::shared_ptr<ObstacleSimple>> getObstacles() const { return obstacles_; }
   
  private:
   ddp::Settings ddpSettings_;
@@ -67,7 +65,7 @@ class ObjectInterface final : public RobotInterface {
 
   vector_t initialState_{STATE_DIM};
   vector_t xFinal_{STATE_DIM};
-  std::vector<std::shared_ptr<ObstacleSimple>> obstacles_;
+  std::vector<vector_t> obstacles_;
 };
 
 }  // namespace object_manipulation

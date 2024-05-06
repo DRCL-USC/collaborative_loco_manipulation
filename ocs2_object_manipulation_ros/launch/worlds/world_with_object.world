@@ -105,7 +105,7 @@
 
         </model>
 
-        <!-- <model name="obstacle">
+        <model name="obstacle">
             <static>true</static>
             <pose>-3.5 -1.5 0.25 0 0 0</pose>
             <link name="body">
@@ -152,7 +152,7 @@
             </link>
 
 
-        </model> -->
+        </model>
 
 
     </world>
