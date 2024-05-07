@@ -4,7 +4,7 @@
     <link name="world"/>
 
   <link name="ground">
-    <visual>
+    <!-- <visual>
       <geometry>
         <box size="50 50 0.05"/>
       </geometry>
@@ -12,7 +12,7 @@
       <material name="grey">
         <color rgba="0.75 0.75 0.75 0.8"/>
       </material>
-    </visual>
+    </visual> -->
     <inertial>
       <mass value="0.1"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
