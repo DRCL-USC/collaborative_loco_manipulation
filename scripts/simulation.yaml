@@ -1,0 +1,13 @@
+session_name: Controller
+windows:
+  - layout: tiled
+    panes:
+      - shell_command:
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch
+      - shell_command:
+        - sleep 2
+        - rosrun ocs2_object_manipulation_ros apply_wrench_node
+    shell_command_before:
+      - cd ~/Projects/ocs2_ws/
+      - source devel/setup.bash 
+    window_name: Controller
