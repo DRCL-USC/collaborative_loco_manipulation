@@ -193,11 +193,6 @@ namespace ocs2
       marker.type = visualization_msgs::Marker::ARROW;
       marker.action = visualization_msgs::Marker::ADD;
 
-      scalar_t yaw = observation.state(2);
-      Eigen::Matrix<scalar_t, 2, 2> rotmat_2d;
-      rotmat_2d << cos(yaw), -sin(yaw), sin(yaw), cos(yaw);
-      vector_t wrench_b = rotmat_2d.transpose() * observation.input.head(2);
-
       marker.pose.position.x = observation.state(0);
       marker.pose.position.y = observation.state(1);
       marker.pose.position.z = 0.0;
@@ -211,7 +206,7 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = wrench_b(robotId);
+      marker.scale.x = observation.input(robotId);
       marker.scale.y = 0.1;
       marker.scale.z = 0.1;
 
