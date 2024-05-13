@@ -16,11 +16,13 @@ namespace ocs2
       visualization_msgs::MarkerArray markerArray;
       visualization_msgs::Marker target_marker = ObjectTarget(command);
       visualization_msgs::Marker object_marker = ObjectTrajectory(observation);
-      visualization_msgs::Marker wrench_marker = wrench(observation);
+      visualization_msgs::Marker wrench_marker = wrench(observation, 0);
+      visualization_msgs::Marker wrench_marker_2 = wrench(observation, 1);
 
       markerArray.markers.push_back(target_marker);
       markerArray.markers.push_back(object_marker);
       markerArray.markers.push_back(wrench_marker);
+      markerArray.markers.push_back(wrench_marker_2);
 
       // Add headers and Id
       assignHeader(markerArray.markers.begin(), markerArray.markers.end(), getHeaderMsg(frameId_, timeStamp));
@@ -182,29 +184,34 @@ namespace ocs2
       return marker;
     }
 
-    visualization_msgs::Marker ObjectDummyVisualization::wrench(const SystemObservation &observation)
+    visualization_msgs::Marker ObjectDummyVisualization::wrench(const SystemObservation &observation, const int robotId)
     {
       // Marker visualization
       visualization_msgs::Marker marker;
       marker.ns = "wrench";
-      marker.id = 0;
+      marker.id = robotId;
       marker.type = visualization_msgs::Marker::ARROW;
       marker.action = visualization_msgs::Marker::ADD;
 
-      marker.pose.position.x = observation.state(0) - observation.input(0);
+      scalar_t yaw = observation.state(2);
+      Eigen::Matrix<scalar_t, 2, 2> rotmat_2d;
+      rotmat_2d << cos(yaw), -sin(yaw), sin(yaw), cos(yaw);
+      vector_t wrench_b = rotmat_2d.transpose() * observation.input.head(2);
+
+      marker.pose.position.x = observation.state(0);
       marker.pose.position.y = observation.state(1);
       marker.pose.position.z = 0.0;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
-      euler << 0.0, 0.0, 0.0;
+      euler << observation.state(2) + robotId*M_PI/2, 0.0, 0.0;
 
-      const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll
+      const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
       marker.pose.orientation.x = quat.x();
       marker.pose.orientation.y = quat.y();
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = observation.input(0);
+      marker.scale.x = wrench_b(robotId);
       marker.scale.y = 0.1;
       marker.scale.z = 0.1;
 
