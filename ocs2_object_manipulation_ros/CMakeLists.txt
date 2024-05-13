@@ -12,6 +12,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   ocs2_robotic_tools
   ocs2_object_manipulation
   ocs2_robotic_assets
+  gazebo_dev
 )
 
 find_package(catkin REQUIRED COMPONENTS
@@ -64,6 +65,7 @@ include_directories(
 # Mpc node
 add_executable(object_mpc
   src/ObjectMpcNode.cpp
+  src/apply_wrench.cpp
 )
 add_dependencies(object_mpc
   ${catkin_EXPORTED_TARGETS}

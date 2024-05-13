@@ -21,5 +21,6 @@
   <depend>ocs2_object_manipulation</depend>
   <depend>robot_state_publisher</depend>
   <depend>ocs2_robotic_assets</depend>
+  <depend>gazebo_dev</depend>
   
 </package>
