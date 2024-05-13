@@ -5,7 +5,7 @@ windows:
       - shell_command:
         - roslaunch ocs2_object_manipulation_ros gazebo.launch
       - shell_command:
-        - sleep 2
+        - sleep 3
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
     shell_command_before:
       - cd ~/Projects/ocs2_ws/

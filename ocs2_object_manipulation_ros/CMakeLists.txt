@@ -62,10 +62,12 @@ include_directories(
 
 # target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
 
+add_library(ApplyBodyForce SHARED plugin/apply_wrench.cc)
+target_link_libraries(ApplyBodyForce ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 # Mpc node
 add_executable(object_mpc
   src/ObjectMpcNode.cpp
-  src/apply_wrench.cpp
 )
 add_dependencies(object_mpc
   ${catkin_EXPORTED_TARGETS}
@@ -98,7 +100,7 @@ target_link_libraries(object_dummy_test
   ${catkin_LIBRARIES}
 )
 
-# State Estimation node
+# Apply Wrench node
 add_executable(apply_wrench_node
   src/ApplyWrenchNode.cpp
 )
