@@ -16,9 +16,11 @@ namespace ocs2
       visualization_msgs::MarkerArray markerArray;
       visualization_msgs::Marker target_marker = ObjectTarget(command);
       visualization_msgs::Marker object_marker = ObjectTrajectory(observation);
+      visualization_msgs::Marker wrench_marker = wrench(observation);
 
       markerArray.markers.push_back(target_marker);
       markerArray.markers.push_back(object_marker);
+      markerArray.markers.push_back(wrench_marker);
 
       // Add headers and Id
       assignHeader(markerArray.markers.begin(), markerArray.markers.end(), getHeaderMsg(frameId_, timeStamp));
@@ -176,6 +178,40 @@ namespace ocs2
       marker.color.r = 1.0;
       marker.color.g = 0.0;
       marker.color.b = 0.0;
+
+      return marker;
+    }
+
+    visualization_msgs::Marker ObjectDummyVisualization::wrench(const SystemObservation &observation)
+    {
+      // Marker visualization
+      visualization_msgs::Marker marker;
+      marker.ns = "wrench";
+      marker.id = 0;
+      marker.type = visualization_msgs::Marker::ARROW;
+      marker.action = visualization_msgs::Marker::ADD;
+
+      marker.pose.position.x = observation.state(0) - observation.input(0);
+      marker.pose.position.y = observation.state(1);
+      marker.pose.position.z = 0.0;
+
+      Eigen::Matrix<scalar_t, 3, 1> euler;
+      euler << 0.0, 0.0, 0.0;
+
+      const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll
+      marker.pose.orientation.x = quat.x();
+      marker.pose.orientation.y = quat.y();
+      marker.pose.orientation.z = quat.z();
+      marker.pose.orientation.w = quat.w();
+
+      marker.scale.x = observation.input(0);
+      marker.scale.y = 0.1;
+      marker.scale.z = 0.1;
+
+      marker.color.a = 1.0; // Don't forget to set the alpha!
+      marker.color.r = 0.0;
+      marker.color.g = 0.0;
+      marker.color.b = 1.0;
 
       return marker;
     }

@@ -33,6 +33,7 @@ namespace ocs2
       void publishDesiredTrajectory(ros::Time timeStamp, const TargetTrajectories &targetTrajectories);
       visualization_msgs::Marker ObjectTrajectory(const SystemObservation &observation);
       visualization_msgs::Marker ObjectTarget(const CommandData &command);
+      visualization_msgs::Marker wrench(const SystemObservation &observation);
 
       ros::Publisher desiredBasePositionPublisher_;
       ros::Publisher stateOptimizedPublisher_;
