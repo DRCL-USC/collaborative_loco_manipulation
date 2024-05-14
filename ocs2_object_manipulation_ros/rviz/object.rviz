@@ -58,7 +58,7 @@ Visualization Manager:
       Marker Topic: /optimizedStateTrajectory
       Name: Marker
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -66,7 +66,9 @@ Visualization Manager:
       Marker Topic: /visualization_marker
       Name: MarkerArray
       Namespaces:
-        {}
+        object: true
+        target: true
+        wrench: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -97,7 +99,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.974252700805664
+      Distance: 10.094213485717773
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -105,17 +107,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -4.981481552124023
-        Y: 0.1638442575931549
-        Z: 0.12400144338607788
+        X: -2.9488914012908936
+        Y: -1.9207284450531006
+        Z: 0.5169446468353271
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.22479742765426636
+      Pitch: 0.6597971320152283
       Target Frame: <Fixed Frame>
-      Yaw: 4.693584442138672
+      Yaw: 0.23357822000980377
     Saved: ~
 Window Geometry:
   Displays:

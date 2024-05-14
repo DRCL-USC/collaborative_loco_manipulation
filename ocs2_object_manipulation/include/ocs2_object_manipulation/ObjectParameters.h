@@ -38,12 +38,14 @@ struct ObjectParameters {
     if (verbose) {
       std::cerr << " #### =============================================================================\n" << std::endl;
     }
+    loadData::loadStdVector(filename, "yaw_init", agents_init_yaw_,  verbose);
   }
 
   scalar_t Mass_ = 1.0;       // [kg]
   scalar_t Inertia_ = 1.0;       // [kg*m^2]
   scalar_t rx_ = 1.0;     // [m]
   scalar_t ry_ = 6.0;       // [m]
+  scalar_array_t agents_init_yaw_ = {0.0, 0.0};
 
  private:
 

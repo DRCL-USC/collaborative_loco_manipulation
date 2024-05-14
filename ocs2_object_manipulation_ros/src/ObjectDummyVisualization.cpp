@@ -176,7 +176,7 @@ namespace ocs2
       marker.scale.y = 0.5;
       marker.scale.z = 0.5;
 
-      marker.color.a = 1.0; // Don't forget to set the alpha!
+      marker.color.a = 0.2; // Don't forget to set the alpha!
       marker.color.r = 1.0;
       marker.color.g = 0.0;
       marker.color.b = 0.0;
@@ -193,12 +193,19 @@ namespace ocs2
       marker.type = visualization_msgs::Marker::ARROW;
       marker.action = visualization_msgs::Marker::ADD;
 
-      marker.pose.position.x = observation.state(0);
-      marker.pose.position.y = observation.state(1);
-      marker.pose.position.z = 0.0;
-
       Eigen::Matrix<scalar_t, 3, 1> euler;
-      euler << observation.state(2) + robotId*M_PI/2, 0.0, 0.0;
+      euler << observation.state(2) + robotId * M_PI / 2 + M_PI, 0.0, 0.0;
+      Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
+
+      auto scaled_input = observation.input(robotId) / 80;
+
+      Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
+                                                                   observation.input(2 + robotId), 0.0)
+                                                                      .finished();
+
+      marker.pose.position.x = observation.state(0) + corrected_position(0);
+      marker.pose.position.y = observation.state(1) + corrected_position(1);
+      marker.pose.position.z = 0.0;
 
       const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
       marker.pose.orientation.x = quat.x();
@@ -206,7 +213,7 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = observation.input(robotId);
+      marker.scale.x = scaled_input;
       marker.scale.y = 0.1;
       marker.scale.z = 0.1;
 

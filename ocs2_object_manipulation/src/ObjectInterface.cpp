@@ -98,17 +98,6 @@ namespace ocs2
 
       // Constraints
 
-      // Velocity constraint
-      const vector_t e = (vector_t(4) << 2, 2, 2, 2).finished();
-      const matrix_t C = (matrix_t(4, STATE_DIM) << 0, 0, 0, 1, 0, 0,
-                          0, 0, 0, -1, 0, 0,
-                          0, 0, 0, 0, 1, 0,
-                          0, 0, 0, 0, -1, 0)
-                             .finished();
-
-      std::unique_ptr<PenaltyBase> VelocityPenalty = std::make_unique<RelaxedBarrierPenalty>(RelaxedBarrierPenalty::Config(0.1, 1e-3));
-      problem_.stateSoftConstraintPtr->add("VelocityConstraint", std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<LinearStateConstraint>(e, C), std::move(VelocityPenalty))));
-
       // CBFs
       std::vector<vector_t> obstacles_;
       obstacles_.push_back((vector_t(3) << -3.5, -1.5, 0.75).finished());
@@ -131,13 +120,30 @@ namespace ocs2
       }
 
       // Box constraints
-      std::vector<StateInputSoftBoxConstraint::BoxConstraint> stateLimits;
-      std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
-      inputLimits.reserve(INPUT_DIM);
       StateInputSoftBoxConstraint::BoxConstraint boxConstraint;
 
+      std::vector<StateInputSoftBoxConstraint::BoxConstraint> stateLimits;
+      stateLimits.reserve(STATE_DIM);
+      for (int i = 0; i < 2; ++i)
+      {
+        boxConstraint.index = 3+i;
+        boxConstraint.lowerBound = -2;
+        boxConstraint.upperBound = 2;
+        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
+        stateLimits.push_back(boxConstraint);
+      }
+
+      std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
+      inputLimits.reserve(INPUT_DIM);
       for(int i = 0; i < 2; ++i)
       {
+        boxConstraint.index = i;
+        boxConstraint.lowerBound = 0;
+        boxConstraint.upperBound = 80;
+        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.01, 0.1)));
+        inputLimits.push_back(boxConstraint);
+        
+        
         boxConstraint.index = i+2;
         boxConstraint.lowerBound = -0.25;
         boxConstraint.upperBound = 0.25;

@@ -7,6 +7,12 @@ object_parameters
   ry     0
 }
 
+yaw_init
+{
+  [0] 3.1415
+  [1] -1.5708
+}
+
 ; DDP settings
 ddp
 {
@@ -113,7 +119,7 @@ R
 ; final state weight matrix
 Q_final
 {
-  scaling 1e+1
+  scaling 1e0
   (0,0)  150  ; x1
   (1,1)  150  ; x2
   (2,2)  3  ; x3
