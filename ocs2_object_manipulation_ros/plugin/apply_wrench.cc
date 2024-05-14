@@ -154,7 +154,7 @@ namespace gazebo
             ignition::math::Vector3d torque(this->wrench_msg_.torque.x, this->wrench_msg_.torque.y, this->wrench_msg_.torque.z);
             ignition::math::Vector3d pose(this->pose_msg_.position.x, this->pose_msg_.position.y, this->pose_msg_.position.z);
             this->link_->AddLinkForce(force, pose);
-            this->link_->AddRelativeTorque(torque);
+            // this->link_->AddRelativeTorque(torque);
 
             this->lock_.unlock();
         }

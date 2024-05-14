@@ -1,9 +1,10 @@
 #include <ros/ros.h>
-#include <gazebo_msgs/ApplyBodyWrench.h> // Replace with the appropriate service message header
 #include <ocs2_core/Types.h>
 #include <ocs2_msgs/mpc_observation.h>
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
 #include <ocs2_ros_interfaces/common/RosMsgConversions.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Wrench.h>
 
 using namespace ocs2;
 
@@ -16,22 +17,34 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     // Create a publish message
-    geometry_msgs::Wrench wrench_msg;
-    ros::Publisher pub = nh.advertise<geometry_msgs::Wrench>("/robot_1/wrench", 1);
+    geometry_msgs::Wrench wrench_msg[2];
+    geometry_msgs::Pose pose_msg[2];
+    ros::Publisher pub_wrench[2], pub_pose[2];
+    pub_wrench[0] = nh.advertise<geometry_msgs::Wrench>("/robot_1/wrench", 1);
+    pub_wrench[1] = nh.advertise<geometry_msgs::Wrench>("/robot_2/wrench", 1);
+    pub_pose[0] = nh.advertise<geometry_msgs::Pose>("/robot_1/contactPoint", 1);
+    pub_pose[1] = nh.advertise<geometry_msgs::Pose>("/robot_2/contactPoint", 1);
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
         std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
 
-        wrench_msg.force.x = observationPtr_->input(0);
-        wrench_msg.force.y = observationPtr_->input(1);
-        wrench_msg.force.z = 0;
-        wrench_msg.torque.x = 0;
-        wrench_msg.torque.y = 0;
-        wrench_msg.torque.z = observationPtr_->input(2);
+        for (int i = 0; i < 2; i++)
+        {
+            wrench_msg[i].force.x = observationPtr_->input(i);
+            wrench_msg[i].force.y = 0;
+            wrench_msg[i].force.z = 0;
+            wrench_msg[i].torque.x = 0;
+            wrench_msg[i].torque.y = 0;
+            wrench_msg[i].torque.z = 0;
+            pub_wrench[i].publish(wrench_msg[i]);
 
-        pub.publish(wrench_msg);
-        
+            pose_msg[i].position.x = 0.0;
+            pose_msg[i].position.y = observationPtr_->input(2+i);
+            pose_msg[i].position.z = 0.0;
+            pub_pose[i].publish(pose_msg[i]);
+        }
+
         ros::Duration(0.01).sleep();
     };
 
