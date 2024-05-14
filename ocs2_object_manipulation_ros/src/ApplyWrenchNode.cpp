@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <iostream>
 #include <ros/ros.h>
 #include <ocs2_core/Types.h>
 #include <ocs2_msgs/mpc_observation.h>
@@ -5,8 +7,10 @@
 #include <ocs2_ros_interfaces/common/RosMsgConversions.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Wrench.h>
+#include <ocs2_object_manipulation/definitions.h>
 
 using namespace ocs2;
+using namespace object_manipulation;
 
 int main(int argc, char **argv)
 {
@@ -29,9 +33,9 @@ int main(int argc, char **argv)
     {
         std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < INPUT_DIM/2; i++)
         {
-            wrench_msg[i].force.x = observationPtr_->input(i);
+            wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
             wrench_msg[i].force.y = 0;
             wrench_msg[i].force.z = 0;
             wrench_msg[i].torque.x = 0;
@@ -52,6 +56,6 @@ int main(int argc, char **argv)
 
     // Spin
     ros::spin();
-    
+
     return 0;
 }
