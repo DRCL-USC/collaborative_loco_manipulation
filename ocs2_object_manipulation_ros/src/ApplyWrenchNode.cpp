@@ -8,6 +8,8 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Wrench.h>
 #include <ocs2_object_manipulation/definitions.h>
+#include <ocs2_object_manipulation/ObjectParameters.h>
+#include <ros/package.h>
 
 using namespace ocs2;
 using namespace object_manipulation;
@@ -33,7 +35,7 @@ int main(int argc, char **argv)
     {
         std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
 
-        for (int i = 0; i < INPUT_DIM/2; i++)
+        for (int i = 0; i < AGENT_NUM; i++)
         {
             wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
             wrench_msg[i].force.y = 0;
@@ -44,7 +46,7 @@ int main(int argc, char **argv)
             pub_wrench[i].publish(wrench_msg[i]);
 
             pose_msg[i].position.x = 0.0;
-            pose_msg[i].position.y = observationPtr_->input(2+i);
+            pose_msg[i].position.y = observationPtr_->input(2 + i);
             pose_msg[i].position.z = 0.0;
             pub_pose[i].publish(pose_msg[i]);
         }

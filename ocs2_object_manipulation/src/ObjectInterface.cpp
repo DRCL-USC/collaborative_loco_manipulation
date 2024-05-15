@@ -114,9 +114,9 @@ namespace ocs2
       for (int i = 0; i < obstacles_.size(); ++i)
       {
         ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(boundsConfig.mu, boundsConfig.delta)));
-        problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
-                                             std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(obstacles_[i]),
-                                                                                                std::move(ObstaclePenalty[i]))));
+        // problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
+        //                                      std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(obstacles_[i]),
+        //                                                                                         std::move(ObstaclePenalty[i]))));
       }
 
       // Box constraints
@@ -154,7 +154,7 @@ namespace ocs2
       auto boxConstraints = std::make_unique<StateInputSoftBoxConstraint>(stateLimits, inputLimits);
       boxConstraints->initializeOffset(0.0, vector_t::Zero(STATE_DIM), vector_t::Zero(INPUT_DIM));
 
-      problem_.softConstraintPtr->add("BoxConstraints", std::move(boxConstraints));
+      // problem_.softConstraintPtr->add("BoxConstraints", std::move(boxConstraints));
 
       // Initialization
       objectInitializerPtr_.reset(new DefaultInitializer(INPUT_DIM));
