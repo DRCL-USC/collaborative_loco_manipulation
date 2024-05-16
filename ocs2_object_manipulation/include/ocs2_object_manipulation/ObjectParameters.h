@@ -5,7 +5,6 @@
 #include <vector>
 
 #include <ocs2_core/Types.h>
-#include <ocs2_core/automatic_differentiation/Types.h>
 #include <ocs2_core/misc/LoadData.h>
 
 namespace ocs2 {
@@ -39,9 +38,7 @@ struct ObjectParameters {
     if (verbose) {
       std::cerr << " #### =============================================================================\n" << std::endl;
     }
-
     loadData::loadStdVector(filename, "yaw_init", agents_init_yaw_,  verbose);
-    loadData::loadStdVector(filename, "Filter_params", filter_params_, verbose);
   }
 
   scalar_t Mass_ = 1.0;       // [kg]
@@ -49,7 +46,6 @@ struct ObjectParameters {
   scalar_t rx_ = 1.0;     // [m]
   scalar_t ry_ = 6.0;       // [m]
   scalar_array_t agents_init_yaw_ = {0.0, 0.0};
-  std::vector<ad_scalar_t> filter_params_;
 
  private:
 

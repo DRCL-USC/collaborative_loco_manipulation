@@ -35,13 +35,13 @@ namespace ocs2
       ad_vector_t systemFlowMap(ad_scalar_t time, const ad_vector_t &state, const ad_vector_t &input,
                                 const ad_vector_t &parameters) const override
       {
-        // Forces
+        
         ad_vector_t total_forces_b(2);
-        for (int i = 0; i < AGENT_NUM; i++)
+        for (int i = 0; i < INPUT_DIM/2; i++)
         {
-          total_forces_b += rotmat_2d(static_cast<ad_scalar_t>(param_.agents_init_yaw_[i])) * (ad_vector_t(2) << state(6 + i * AGENT_NUM + 1), static_cast<ad_scalar_t>(0.0)).finished();
+          total_forces_b += rotmat_2d(static_cast<ad_scalar_t>(param_.agents_init_yaw_[i]))* (ad_vector_t(2) << input(i), static_cast<ad_scalar_t>(0.0)).finished();
         }
-
+        
         ad_vector_t total_forces_w = rotmat_2d(state(2)) * total_forces_b;
 
         // Inertia tensor
@@ -51,23 +51,11 @@ namespace ocs2
             static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(param_.Inertia_);
 
         // RHS
-        ad_scalar_t torque;
-        for (int i = 0; i < AGENT_NUM; i++)
-        {
-          torque += -state(6 + i * AGENT_NUM + 1) * input(i + AGENT_NUM);
-        }
-        Eigen::Matrix<ad_scalar_t, 3, 1> rhs(total_forces_w(0), total_forces_w(1), torque);
+        Eigen::Matrix<ad_scalar_t, 3, 1> rhs(total_forces_w(0), total_forces_w(1), -input(0) * input(2) - input(1) * input(3));
 
         // dxdt
-        ad_vector_t aux_state_derivative(2*AGENT_NUM);
-        for (int i = 0; i < AGENT_NUM; i++)
-        {
-          aux_state_derivative(i * AGENT_NUM) = param_.filter_params_[0] * state(6 + i * AGENT_NUM) + param_.filter_params_[1] * input(i);
-          aux_state_derivative(i * AGENT_NUM + 1) = param_.filter_params_[2] * state(6 + i * AGENT_NUM) + param_.filter_params_[3] * input(i);
-        }
-
         ad_vector_t stateDerivative(STATE_DIM);
-        stateDerivative << state.tail<3>(), I.inverse() * rhs, aux_state_derivative;
+        stateDerivative << state.tail<3>(), I.inverse() * rhs;
         return stateDerivative;
       }
 

@@ -39,7 +39,7 @@
                                     <type>ocs2_msgs/mpc_observation</type>
                                 </x_axis>
                                 <y_axis>
-                                    <field>state/value/7</field>
+                                    <field>input/value/0</field>
                                     <field_type>0</field_type>
                                     <scale>
                                         <absolute_maximum>1000</absolute_maximum>
@@ -79,7 +79,7 @@
                         <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
-                    <title>Force_1</title>
+                    <title>Force_x</title>
                 </column_0>
                 <column_1>
                     <axes>
@@ -189,7 +189,7 @@
                                     <type>ocs2_msgs/mpc_observation</type>
                                 </x_axis>
                                 <y_axis>
-                                    <field>state/value/9</field>
+                                    <field>input/value/1</field>
                                     <field_type>0</field_type>
                                     <scale>
                                         <absolute_maximum>1000</absolute_maximum>
@@ -229,7 +229,7 @@
                         <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
-                    <title>Force_2</title>
+                    <title>Force_y</title>
                 </column_0>
                 <column_1>
                     <axes>
