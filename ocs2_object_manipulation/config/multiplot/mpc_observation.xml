@@ -150,7 +150,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>position_x</title>
@@ -450,7 +450,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>V_x</title>
@@ -526,7 +526,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>V_y</title>
@@ -600,7 +600,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>yaw angle</title>
@@ -676,7 +676,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>d1</title>
@@ -750,7 +750,7 @@
                         </curve_0>
                     </curves>
                     <legend>
-                        <visible>true</visible>
+                        <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
                     <title>d2</title>

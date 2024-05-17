@@ -126,25 +126,24 @@ namespace ocs2
       stateLimits.reserve(STATE_DIM);
       for (int i = 0; i < 2; ++i)
       {
-        boxConstraint.index = 3+i;
+        boxConstraint.index = 3 + i;
         boxConstraint.lowerBound = -2;
         boxConstraint.upperBound = 2;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
-        stateLimits.push_back(boxConstraint);
+        // stateLimits.push_back(boxConstraint);
       }
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
       inputLimits.reserve(INPUT_DIM);
-      for(int i = 0; i < 2; ++i)
+      for (int i = 0; i < 2; ++i)
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 80;
-        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.01, 0.1)));
+        boxConstraint.upperBound = 20;
+        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
-        
-        
-        boxConstraint.index = i+2;
+
+        boxConstraint.index = i + 2;
         boxConstraint.lowerBound = -0.25;
         boxConstraint.upperBound = 0.25;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
