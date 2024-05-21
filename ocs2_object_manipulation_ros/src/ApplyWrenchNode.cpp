@@ -7,6 +7,7 @@
 #include <ocs2_ros_interfaces/common/RosMsgConversions.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Wrench.h>
+#include <geometry_msgs/Twist.h>
 #include <ocs2_object_manipulation/definitions.h>
 
 using namespace ocs2;
@@ -23,11 +24,14 @@ int main(int argc, char **argv)
     // Create a publish message
     geometry_msgs::Wrench wrench_msg[2];
     geometry_msgs::Pose pose_msg[2];
-    ros::Publisher pub_wrench[2], pub_pose[2];
+    geometry_msgs::Twist twist_msg[2];
+    ros::Publisher pub_wrench[2], pub_pose[2], pub_twist[2];
     pub_wrench[0] = nh.advertise<geometry_msgs::Wrench>("/robot_1/wrench", 1);
     pub_wrench[1] = nh.advertise<geometry_msgs::Wrench>("/robot_2/wrench", 1);
     pub_pose[0] = nh.advertise<geometry_msgs::Pose>("/robot_1/contactPoint", 1);
     pub_pose[1] = nh.advertise<geometry_msgs::Pose>("/robot_2/contactPoint", 1);
+    pub_twist[0] = nh.advertise<geometry_msgs::Twist>("/robot_1/cmd_vel", 1);
+    pub_twist[1] = nh.advertise<geometry_msgs::Twist>("/robot_2/cmd_vel", 1);
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
@@ -47,6 +51,14 @@ int main(int argc, char **argv)
             pose_msg[i].position.y = observationPtr_->input(2+i);
             pose_msg[i].position.z = 0.0;
             pub_pose[i].publish(pose_msg[i]);
+
+            twist_msg[i].linear.x = observationPtr_->state(3);
+            twist_msg[i].linear.y = observationPtr_->state(4);
+            twist_msg[i].linear.z = 0;
+            twist_msg[i].angular.x = 0;
+            twist_msg[i].angular.y = 0;
+            twist_msg[i].angular.z = observationPtr_->state(5);
+            pub_twist[i].publish(twist_msg[i]);
         }
 
         ros::Duration(0.01).sleep();

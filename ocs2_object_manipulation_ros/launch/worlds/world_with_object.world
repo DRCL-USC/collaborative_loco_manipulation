@@ -105,7 +105,7 @@
                 <pose>0 0 0 0 0 0</pose>
             </joint>
 
-            <plugin name="r1_force" filename="libApplyBodyForce.so">
+            <!-- <plugin name="r1_force" filename="libApplyBodyForce.so">
                 <robotNamespace>/robot_1</robotNamespace>
                 <bodyName>dummy_1</bodyName>
                 <ForceTopicName>wrench</ForceTopicName>
@@ -117,7 +117,7 @@
                 <bodyName>dummy_2</bodyName>
                 <ForceTopicName>wrench</ForceTopicName>
                 <referencePointTopicName>contactPoint</referencePointTopicName>
-            </plugin>
+            </plugin> -->
 
         </model>
 
