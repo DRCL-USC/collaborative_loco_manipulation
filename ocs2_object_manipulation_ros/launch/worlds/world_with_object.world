@@ -64,7 +64,7 @@
             </link>
 
             <link name="dummy_1">
-                <pose>0 0 0.0 0 0 3.1415</pose>
+                <pose>0 0 0.0 0 0 0</pose>
                 <inertial>
                     <mass>0.005</mass>
                     <inertia>
@@ -85,7 +85,7 @@
             </joint>
 
             <link name="dummy_2">
-                <pose>0 0 0.0 0 0 -1.5708</pose>
+                <pose>0 0 0.0 0 0 1.5708</pose>
                 <inertial>
                     <mass>0.005</mass>
                     <inertia>
@@ -123,7 +123,7 @@
 
         <model name="obstacle">
             <static>true</static>
-            <pose>-3.5 -1.5 0.25 0 0 0</pose>
+            <pose>3.5 1.5 0.25 0 0 0</pose>
             <link name="body">
                 <inertial>
                     <mass>5</mass>
@@ -145,8 +145,8 @@
                     <surface>
                         <friction>
                             <ode>
-                                <mu>0.2</mu>
-                                <mu2>0.2</mu2>
+                                <mu>0.05</mu>
+                                <mu2>0.05</mu2>
                             </ode>
                         </friction>
                         <contact>
@@ -170,7 +170,7 @@
 
         <model name="obstacle_2">
             <static>true</static>
-            <pose>-2 -2 0.25 0 0 0</pose>
+            <pose>2 2 0.25 0 0 0</pose>
             <link name="body">
                 <inertial>
                     <mass>5</mass>
