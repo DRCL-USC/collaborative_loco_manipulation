@@ -6,13 +6,13 @@
 
 #include <ocs2_core/Types.h>
 #include <ocs2_core/misc/LoadData.h>
-
+#include <ocs2_object_manipulation/definitions.h>
 namespace ocs2 {
 namespace object_manipulation {
 
-struct ObjectParameters {
+struct ObjectManipulationParameters {
   /** Constructor */
-  ObjectParameters() {  }
+  ObjectManipulationParameters() {  }
 
   void display() {
     std::cerr << "Object parameters: "
@@ -38,7 +38,6 @@ struct ObjectParameters {
     if (verbose) {
       std::cerr << " #### =============================================================================\n" << std::endl;
     }
-    loadData::loadStdVector(filename, "yaw_init", agents_init_yaw_,  verbose);
   }
 
   scalar_t Mass_ = 1.0;       // [kg]
@@ -46,6 +45,7 @@ struct ObjectParameters {
   scalar_t rx_ = 1.0;     // [m]
   scalar_t ry_ = 6.0;       // [m]
   scalar_array_t agents_init_yaw_ = {0.0, 0.0};
+  matrix_t obstacles_ = matrix_t::Zero(OBSTACLE_COUNT, 3);
 
  private:
 

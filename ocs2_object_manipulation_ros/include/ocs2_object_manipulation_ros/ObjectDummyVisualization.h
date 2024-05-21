@@ -7,6 +7,7 @@
 
 #include "ocs2_object_manipulation/definitions.h"
 #include <visualization_msgs/MarkerArray.h>
+#include <ocs2_object_manipulation/ObjectParameters.h>
 
 namespace ocs2
 {
@@ -20,7 +21,8 @@ namespace ocs2
       std::string frameId_ = "world";                                                                 // Frame name all messages are published in
       scalar_t trajectoryLineWidth_ = 0.01;                                                          // LineThickness for trajectories
 
-      explicit ObjectDummyVisualization(ros::NodeHandle &nodeHandle) { launchVisualizerNode(nodeHandle); }
+      explicit ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const ObjectManipulationParameters &objectParameters): 
+      params_(objectParameters) { launchVisualizerNode(nodeHandle); }
 
       ~ObjectDummyVisualization() override = default;
 
@@ -38,6 +40,7 @@ namespace ocs2
       ros::Publisher desiredBasePositionPublisher_;
       ros::Publisher stateOptimizedPublisher_;
       ros::Publisher vis_pub;
+      ObjectManipulationParameters params_;
     };
 
   } // namespace object_manipulation

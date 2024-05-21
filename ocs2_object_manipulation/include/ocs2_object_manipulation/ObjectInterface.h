@@ -51,7 +51,9 @@ class ObjectInterface final : public RobotInterface {
   const RolloutBase& getRollout() const { return *rolloutPtr_; }
 
   const Initializer& getInitializer() const override { return *objectInitializerPtr_; }
-  
+
+  object_manipulation::ObjectManipulationParameters& getProblemSettings() { return problem_settings_; }
+
  private:
   ddp::Settings ddpSettings_;
   mpc::Settings mpcSettings_;
@@ -64,6 +66,8 @@ class ObjectInterface final : public RobotInterface {
 
   vector_t initialState_{STATE_DIM};
   vector_t xFinal_{STATE_DIM};
+  
+  ObjectManipulationParameters problem_settings_;
 };
 
 }  // namespace object_manipulation

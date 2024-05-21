@@ -20,7 +20,7 @@ namespace ocs2
     class ObjectSytemDynamics : public SystemDynamicsBaseAD
     {
     public:
-      ObjectSytemDynamics(const ObjectParameters &objectParameters, const std::string &libraryFolder, bool verbose)
+      ObjectSytemDynamics(const ObjectManipulationParameters &objectParameters, const std::string &libraryFolder, bool verbose)
           : param_(objectParameters)
       {
         initialize(STATE_DIM, INPUT_DIM, "object_dynamics", libraryFolder, true, verbose);
@@ -37,7 +37,7 @@ namespace ocs2
       {
         
         ad_vector_t total_forces_b(2);
-        for (int i = 0; i < INPUT_DIM/2; i++)
+        for (int i = 0; i < AGENT_COUNT; i++)
         {
           total_forces_b += rotmat_2d(static_cast<ad_scalar_t>(param_.agents_init_yaw_[i]))* (ad_vector_t(2) << input(i), static_cast<ad_scalar_t>(0.0)).finished();
         }
@@ -60,7 +60,7 @@ namespace ocs2
       }
 
     private:
-      ObjectParameters param_;
+      ObjectManipulationParameters param_;
     };
 
   } // namespace object_manipulation

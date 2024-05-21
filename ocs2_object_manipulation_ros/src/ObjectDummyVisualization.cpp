@@ -194,7 +194,7 @@ namespace ocs2
       marker.action = visualization_msgs::Marker::ADD;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
-      euler << observation.state(2) + robotId * M_PI / 2 + M_PI, 0.0, 0.0;
+      euler << observation.state(2) + params_.agents_init_yaw_[robotId], 0.0, 0.0;
       Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
       auto scaled_input = observation.input(robotId) / 80;
