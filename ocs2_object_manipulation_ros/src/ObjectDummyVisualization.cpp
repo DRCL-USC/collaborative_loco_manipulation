@@ -63,7 +63,7 @@ namespace ocs2
         // Construct base pose msg
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.0;
+        basePose << state(0), state(1), 0.25;
         pose.position = getPointMsg(basePose);
 
         // Fill message containers
@@ -102,7 +102,7 @@ namespace ocs2
         // Fill com position and pose msgs
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.0;
+        basePose << state(0), state(1), 0.25;
         pose.position = getPointMsg(basePose);
         mpcComPositionMsgs.push_back(pose.position); });
 
@@ -125,7 +125,7 @@ namespace ocs2
 
       marker.pose.position.x = observation.state(0);
       marker.pose.position.y = observation.state(1);
-      marker.pose.position.z = 0.0;
+      marker.pose.position.z = 0.25;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << observation.state(2), 0.0, 0.0;
@@ -161,7 +161,7 @@ namespace ocs2
 
       marker.pose.position.x = targetTrajectories.stateTrajectory[0](0);
       marker.pose.position.y = targetTrajectories.stateTrajectory[0](1);
-      marker.pose.position.z = 0.0;
+      marker.pose.position.z = 0.25;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << targetTrajectories.stateTrajectory[0](2), 0.0, 0.0;
@@ -205,7 +205,7 @@ namespace ocs2
 
       marker.pose.position.x = observation.state(0) + corrected_position(0);
       marker.pose.position.y = observation.state(1) + corrected_position(1);
-      marker.pose.position.z = 0.0;
+      marker.pose.position.z = 0.25;
 
       const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
       marker.pose.orientation.x = quat.x();
