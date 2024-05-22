@@ -9,6 +9,9 @@
 #include <geometry_msgs/Wrench.h>
 #include <geometry_msgs/Twist.h>
 #include <ocs2_object_manipulation/definitions.h>
+#include <ros/package.h>
+#include <ocs2_core/misc/LoadData.h>
+#include <ocs2_robotic_tools/common/RotationTransforms.h>
 
 using namespace ocs2;
 using namespace object_manipulation;
@@ -33,12 +36,25 @@ int main(int argc, char **argv)
     pub_twist[0] = nh.advertise<geometry_msgs::Twist>("/robot_1/cmd_vel", 1);
     pub_twist[1] = nh.advertise<geometry_msgs::Twist>("/robot_2/cmd_vel", 1);
 
+    scalar_array_t agents_init_yaw_ = {0.0, 0.0};
+    const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/mpc/task.info";
+    loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
+
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
         std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
 
         for (int i = 0; i < AGENT_COUNT; i++)
         {
+
+            Eigen::Matrix<scalar_t, 3, 1> euler;
+            euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
+            Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
+
+            Eigen::Matrix<scalar_t, 3, 1> obj_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(0),
+                                                                         observationPtr_->state(1), 0.0)
+                                                                            .finished();
+
             wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
             wrench_msg[i].force.y = 0;
             wrench_msg[i].force.z = 0;
@@ -47,13 +63,13 @@ int main(int argc, char **argv)
             wrench_msg[i].torque.z = 0;
             pub_wrench[i].publish(wrench_msg[i]);
 
-            pose_msg[i].position.x = 0.0;
-            pose_msg[i].position.y = observationPtr_->input(2+i);
+            pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25;
+            pose_msg[i].position.y = obj_pose_robot_frame(1) + observationPtr_->input(2 + i);
             pose_msg[i].position.z = 0.0;
             pub_pose[i].publish(pose_msg[i]);
 
-            twist_msg[i].linear.x = observationPtr_->state(3);
-            twist_msg[i].linear.y = observationPtr_->state(4);
+            twist_msg[i].linear.x = 0;
+            twist_msg[i].linear.y = 0;
             twist_msg[i].linear.z = 0;
             twist_msg[i].angular.x = 0;
             twist_msg[i].angular.y = 0;
