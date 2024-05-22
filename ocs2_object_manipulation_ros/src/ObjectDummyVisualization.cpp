@@ -13,22 +13,20 @@ namespace ocs2
       const auto timeStamp = ros::Time::now();
 
       // Publish object trajectory
-      visualization_msgs::MarkerArray markerArray;
-      visualization_msgs::Marker target_marker = ObjectTarget(command);
-      visualization_msgs::Marker object_marker = ObjectTrajectory(observation);
-      visualization_msgs::Marker wrench_marker = wrench(observation, 0);
-      visualization_msgs::Marker wrench_marker_2 = wrench(observation, 1);
+      visualization_msgs::MarkerArray objectmarkers;
+      visualization_msgs::Marker target_marker = ObjectTarget(timeStamp, command);
+      visualization_msgs::Marker object_marker = ObjectTrajectory(timeStamp, observation);
+      objectmarkers.markers.push_back(target_marker);
+      objectmarkers.markers.push_back(object_marker);
+      objectPublisher_.publish(objectmarkers);
 
-      markerArray.markers.push_back(target_marker);
-      markerArray.markers.push_back(object_marker);
-      markerArray.markers.push_back(wrench_marker);
-      markerArray.markers.push_back(wrench_marker_2);
+      // Publish wrenches
+      visualization_msgs::MarkerArray wrench_markers = wrench(timeStamp, observation);
+      wrenchPublisher_.publish(wrench_markers);
 
-      // Add headers and Id
-      assignHeader(markerArray.markers.begin(), markerArray.markers.end(), getHeaderMsg(frameId_, timeStamp));
-      assignIncreasingId(markerArray.markers.begin(), markerArray.markers.end());
-
-      vis_pub.publish(markerArray);
+      // Publish obstacles
+      visualization_msgs::MarkerArray obstacle_markers = obstacles(timeStamp);
+      obstaclesPublisher_.publish(obstacle_markers);
 
       // Publish desired trajectory
       // publishDesiredTrajectory(timeStamp, targetTrajectories);
@@ -39,7 +37,9 @@ namespace ocs2
     {
       desiredBasePositionPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/desiredBaseTrajectory", 1);
       stateOptimizedPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/optimizedStateTrajectory", 1);
-      vis_pub = nodeHandle.advertise<visualization_msgs::MarkerArray>("/visualization_marker", 0);
+      objectPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/object_markers", 0);
+      wrenchPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/wrench_markers", 0);
+      obstaclesPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/obstacle_markers", 0);
     }
 
     /******************************************************************************************************/
@@ -114,10 +114,12 @@ namespace ocs2
       stateOptimizedPublisher_.publish(comLineMsg);
     }
 
-    visualization_msgs::Marker ObjectDummyVisualization::ObjectTrajectory(const SystemObservation &observation)
+    visualization_msgs::Marker ObjectDummyVisualization::ObjectTrajectory(ros::Time timeStamp, const SystemObservation &observation)
     {
       // Marker visualization
       visualization_msgs::Marker marker;
+      marker.header.frame_id = frameId_;
+      marker.header.stamp = timeStamp;
       marker.ns = "object";
       marker.id = 0;
       marker.type = visualization_msgs::Marker::CUBE;
@@ -148,12 +150,14 @@ namespace ocs2
       return marker;
     }
 
-    visualization_msgs::Marker ObjectDummyVisualization::ObjectTarget(const CommandData &command)
+    visualization_msgs::Marker ObjectDummyVisualization::ObjectTarget(ros::Time timeStamp, const CommandData &command)
     {
       const auto &targetTrajectories = command.mpcTargetTrajectories_;
 
       // Marker visualization
       visualization_msgs::Marker marker;
+      marker.header.frame_id = frameId_;
+      marker.header.stamp = timeStamp;
       marker.ns = "target";
       marker.id = 0;
       marker.type = visualization_msgs::Marker::CUBE;
@@ -184,45 +188,133 @@ namespace ocs2
       return marker;
     }
 
-    visualization_msgs::Marker ObjectDummyVisualization::wrench(const SystemObservation &observation, const int robotId)
+    visualization_msgs::MarkerArray ObjectDummyVisualization::wrench(ros::Time timeStamp, const SystemObservation &observation)
     {
+
+      visualization_msgs::MarkerArray markerArray;
+
+      for (int i = 0; i < AGENT_COUNT; i++)
+      {
+        // Marker visualization
+        visualization_msgs::Marker marker;
+        marker.header.frame_id = frameId_;
+        marker.header.stamp = timeStamp;
+        marker.ns = "wrench";
+        marker.id = i;
+        marker.type = visualization_msgs::Marker::ARROW;
+        marker.action = visualization_msgs::Marker::ADD;
+
+        Eigen::Matrix<scalar_t, 3, 1> euler;
+        euler << observation.state(2) + params_.agents_init_yaw_[i], 0.0, 0.0;
+        Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
+
+        auto scaled_input = observation.input(i) / 80;
+
+        Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
+                                                                     observation.input(AGENT_COUNT + i), 0.0)
+                                                                        .finished();
+
+        marker.pose.position.x = observation.state(0) + corrected_position(0);
+        marker.pose.position.y = observation.state(1) + corrected_position(1);
+        marker.pose.position.z = 0.25;
+
+        const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
+        marker.pose.orientation.x = quat.x();
+        marker.pose.orientation.y = quat.y();
+        marker.pose.orientation.z = quat.z();
+        marker.pose.orientation.w = quat.w();
+
+        marker.scale.x = scaled_input;
+        marker.scale.y = 0.1;
+        marker.scale.z = 0.1;
+
+        marker.color.a = 1.0; // Don't forget to set the alpha!
+        marker.color.r = 0.0;
+        marker.color.g = 0.0;
+        marker.color.b = 1.0;
+
+        markerArray.markers.push_back(marker);
+      }
+
+      return markerArray;
+    }
+
+    visualization_msgs::MarkerArray ObjectDummyVisualization::obstacles(ros::Time timeStamp)
+    {
+
+      visualization_msgs::MarkerArray markerArray;
+
       // Marker visualization
       visualization_msgs::Marker marker;
-      marker.ns = "wrench";
-      marker.id = robotId;
-      marker.type = visualization_msgs::Marker::ARROW;
+      marker.header.frame_id = frameId_;
+      marker.header.stamp = timeStamp;
+      marker.ns = "obstacles";
+      marker.id = 0;
+      marker.type = visualization_msgs::Marker::CUBE_LIST;
       marker.action = visualization_msgs::Marker::ADD;
 
-      Eigen::Matrix<scalar_t, 3, 1> euler;
-      euler << observation.state(2) + params_.agents_init_yaw_[robotId], 0.0, 0.0;
-      Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
-
-      auto scaled_input = observation.input(robotId) / 80;
-
-      Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
-                                                                   observation.input(2 + robotId), 0.0)
-                                                                      .finished();
-
-      marker.pose.position.x = observation.state(0) + corrected_position(0);
-      marker.pose.position.y = observation.state(1) + corrected_position(1);
-      marker.pose.position.z = 0.25;
-
-      const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
-      marker.pose.orientation.x = quat.x();
-      marker.pose.orientation.y = quat.y();
-      marker.pose.orientation.z = quat.z();
-      marker.pose.orientation.w = quat.w();
-
-      marker.scale.x = scaled_input;
-      marker.scale.y = 0.1;
-      marker.scale.z = 0.1;
+      marker.scale.x = 0.5;
+      marker.scale.y = 0.5;
+      marker.scale.z = 0.5;
 
       marker.color.a = 1.0; // Don't forget to set the alpha!
       marker.color.r = 0.0;
       marker.color.g = 0.0;
       marker.color.b = 1.0;
 
-      return marker;
+      marker.pose.orientation.x = 0.0;
+      marker.pose.orientation.y = 0.0;
+      marker.pose.orientation.z = 0.0;
+      marker.pose.orientation.w = 1.0;
+
+      // Define a list of points
+      for (int i = 0; i < OBSTACLE_COUNT; i++)
+      {
+        geometry_msgs::Point p;
+        p.x = params_.obstacles_(i, 0);
+        p.y = params_.obstacles_(i, 1);
+        p.z = 0.25;
+        marker.points.push_back(p);
+      }
+
+      markerArray.markers.push_back(marker);
+
+      //Marker visualization
+      visualization_msgs::Marker marker2;
+      marker2.header.frame_id = frameId_;
+      marker2.header.stamp = timeStamp;
+      marker2.ns = "obstacles";
+      marker2.id = 1;
+      marker2.type = visualization_msgs::Marker::SPHERE_LIST;
+      marker2.action = visualization_msgs::Marker::ADD;
+
+      marker2.scale.x = 1;
+      marker2.scale.y = 1;
+      marker2.scale.z = 1;
+
+      marker2.color.a = 0.7; // Don't forget to set the alpha!
+      marker2.color.r = 0.0;
+      marker2.color.g = 1.0;
+      marker2.color.b = 0.0;
+
+      marker2.pose.orientation.x = 0.0;
+      marker2.pose.orientation.y = 0.0;
+      marker2.pose.orientation.z = 0.0;
+      marker2.pose.orientation.w = 1.0;
+
+      // Define a list of points
+      for (int i = 0; i < OBSTACLE_COUNT; i++)
+      {
+        geometry_msgs::Point p;
+        p.x = params_.obstacles_(i, 0);
+        p.y = params_.obstacles_(i, 1);
+        p.z = 0.25;
+        marker2.points.push_back(p);
+      }
+
+      // markerArray.markers.push_back(marker2);
+
+      return markerArray;
     }
 
   } // namespace object_manipulation
