@@ -29,13 +29,13 @@ namespace ocs2
       obstaclesPublisher_.publish(obstacle_markers);
 
       // Publish desired trajectory
-      // publishDesiredTrajectory(timeStamp, targetTrajectories);
+      publishDesiredTrajectory(timeStamp, command.mpcTargetTrajectories_);
       publishOptimizedStateTrajectory(timeStamp, policy.timeTrajectory_, policy.stateTrajectory_, policy.modeSchedule_);
     }
 
     void ObjectDummyVisualization::launchVisualizerNode(ros::NodeHandle &nodeHandle)
     {
-      desiredBasePositionPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/desiredBaseTrajectory", 1);
+      desiredBasePositionPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/desiredTrajectory", 1);
       stateOptimizedPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/optimizedStateTrajectory", 1);
       objectPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/object_markers", 0);
       wrenchPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/wrench_markers", 0);
@@ -48,7 +48,6 @@ namespace ocs2
     void ObjectDummyVisualization::publishDesiredTrajectory(ros::Time timeStamp, const TargetTrajectories &targetTrajectories)
     {
       const auto &stateTrajectory = targetTrajectories.stateTrajectory;
-      const auto &inputTrajectory = targetTrajectories.inputTrajectory;
 
       // Reserve com messages
       std::vector<geometry_msgs::Point> desiredBasePositionMsg;
@@ -163,12 +162,12 @@ namespace ocs2
       marker.type = visualization_msgs::Marker::CUBE;
       marker.action = visualization_msgs::Marker::ADD;
 
-      marker.pose.position.x = targetTrajectories.stateTrajectory[0](0);
-      marker.pose.position.y = targetTrajectories.stateTrajectory[0](1);
+      marker.pose.position.x = targetTrajectories.stateTrajectory[1](0);
+      marker.pose.position.y = targetTrajectories.stateTrajectory[1](1);
       marker.pose.position.z = 0.25;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
-      euler << targetTrajectories.stateTrajectory[0](2), 0.0, 0.0;
+      euler << targetTrajectories.stateTrajectory[1](2), 0.0, 0.0;
 
       const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll
       marker.pose.orientation.x = quat.x();
