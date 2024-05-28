@@ -31,7 +31,7 @@ namespace ocs2
     private:
       void launchVisualizerNode(ros::NodeHandle &nodeHandle);
       void publishOptimizedStateTrajectory(ros::Time timeStamp, const scalar_array_t &mpcTimeTrajectory,
-                                           const vector_array_t &mpcStateTrajectory, const ModeSchedule &modeSchedule);
+                                           const vector_array_t &mpcStateTrajectory);
       void publishDesiredTrajectory(ros::Time timeStamp, const TargetTrajectories &targetTrajectories);
       visualization_msgs::Marker ObjectTrajectory(ros::Time timeStamp, const SystemObservation &observation);
       visualization_msgs::Marker ObjectTarget(ros::Time timeStamp, const CommandData &command);

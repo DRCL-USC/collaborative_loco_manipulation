@@ -30,7 +30,7 @@ namespace ocs2
 
       // Publish desired trajectory
       publishDesiredTrajectory(timeStamp, command.mpcTargetTrajectories_);
-      publishOptimizedStateTrajectory(timeStamp, policy.timeTrajectory_, policy.stateTrajectory_, policy.modeSchedule_);
+      publishOptimizedStateTrajectory(timeStamp, policy.timeTrajectory_, policy.stateTrajectory_);
     }
 
     void ObjectDummyVisualization::launchVisualizerNode(ros::NodeHandle &nodeHandle)
@@ -84,7 +84,7 @@ namespace ocs2
     /******************************************************************************************************/
     /******************************************************************************************************/
     void ObjectDummyVisualization::publishOptimizedStateTrajectory(ros::Time timeStamp, const scalar_array_t &mpcTimeTrajectory,
-                                                                   const vector_array_t &mpcStateTrajectory, const ModeSchedule &modeSchedule)
+                                                                   const vector_array_t &mpcStateTrajectory)
     {
       if (mpcTimeTrajectory.empty() || mpcStateTrajectory.empty())
       {
