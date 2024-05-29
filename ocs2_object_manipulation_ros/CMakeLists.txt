@@ -111,6 +111,17 @@ target_link_libraries(apply_wrench_node
   ${catkin_LIBRARIES}
 )
 
+# Target Pose node
+add_executable(object_manipulation_target
+  src/TargetPoseCommand.cpp
+)
+add_dependencies(object_manipulation_target
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(object_manipulation_target
+  ${catkin_LIBRARIES}
+)
+
 #########################
 ###   CLANG TOOLING   ###
 #########################

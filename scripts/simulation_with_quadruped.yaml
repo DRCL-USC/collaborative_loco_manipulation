@@ -20,7 +20,7 @@ windows:
       - shell_command:
         - sleep 16
         - rosrun ocs2_object_manipulation_ros apply_wrench_node /robot_1/wrench:=/alien1/wrench /robot_2/wrench:=/alien2/wrench 
-            /robot_1/cmd_vel:=/alien1/cmd_vel /robot_2/cmd_vel:=/alien2/cmd_vel
+            /robot_1/cmd_vel:=/alien1/cmd_vel /robot_2/cmd_vel:=/alien2/cmd_vel /robot_1/contactPoint:=/alien1/contactPoint /robot_2/contactPoint:=/alien2/contactPoint
     shell_command_before:
       - cd ~/Projects/ocs2_ws/
       - source devel/setup.bash 

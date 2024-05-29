@@ -31,15 +31,18 @@ namespace ocs2
     private:
       void launchVisualizerNode(ros::NodeHandle &nodeHandle);
       void publishOptimizedStateTrajectory(ros::Time timeStamp, const scalar_array_t &mpcTimeTrajectory,
-                                           const vector_array_t &mpcStateTrajectory, const ModeSchedule &modeSchedule);
+                                           const vector_array_t &mpcStateTrajectory);
       void publishDesiredTrajectory(ros::Time timeStamp, const TargetTrajectories &targetTrajectories);
-      visualization_msgs::Marker ObjectTrajectory(const SystemObservation &observation);
-      visualization_msgs::Marker ObjectTarget(const CommandData &command);
-      visualization_msgs::Marker wrench(const SystemObservation &observation, const int robotId);
+      visualization_msgs::Marker ObjectTrajectory(ros::Time timeStamp, const SystemObservation &observation);
+      visualization_msgs::Marker ObjectTarget(ros::Time timeStamp, const CommandData &command);
+      visualization_msgs::MarkerArray wrench(ros::Time timeStamp, const SystemObservation &observation);
+      visualization_msgs::MarkerArray obstacles(ros::Time timeStamp);
 
       ros::Publisher desiredBasePositionPublisher_;
       ros::Publisher stateOptimizedPublisher_;
-      ros::Publisher vis_pub;
+      ros::Publisher wrenchPublisher_;
+      ros::Publisher objectPublisher_;
+      ros::Publisher obstaclesPublisher_;
       ObjectManipulationParameters params_;
     };
 
