@@ -12,6 +12,7 @@
 // Object manipulation
 #include "ocs2_object_manipulation/ObjectParameters.h"
 #include "ocs2_object_manipulation/definitions.h"
+#include "ocs2_object_manipulation/dynamics/ObjectSystemDynamics.h"
 
 namespace ocs2 {
 namespace object_manipulation {
@@ -54,6 +55,8 @@ class ObjectInterface final : public RobotInterface {
 
   object_manipulation::ObjectManipulationParameters& getProblemSettings() { return problem_settings_; }
 
+  std::shared_ptr<AdaptiveControl> getAdaptiveControlPtr() { return adaptiveControlPtr_; }
+
  private:
   ddp::Settings ddpSettings_;
   mpc::Settings mpcSettings_;
@@ -68,6 +71,7 @@ class ObjectInterface final : public RobotInterface {
   vector_t xFinal_{STATE_DIM};
   
   ObjectManipulationParameters problem_settings_;
+  std::shared_ptr<AdaptiveControl> adaptiveControlPtr_;
 };
 
 }  // namespace object_manipulation

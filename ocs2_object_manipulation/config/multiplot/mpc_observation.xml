@@ -79,7 +79,7 @@
                         <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
-                    <title>Force_x</title>
+                    <title>F1</title>
                 </column_0>
                 <column_1>
                     <axes>
@@ -229,7 +229,7 @@
                         <visible>false</visible>
                     </legend>
                     <plot_rate>30</plot_rate>
-                    <title>Force_y</title>
+                    <title>F2</title>
                 </column_0>
                 <column_1>
                     <axes>
@@ -322,59 +322,6 @@
                             </y_axis>
                         </axes>
                     </axes>
-                    <curves>
-                        <curve_0>
-                            <axes>
-                                <x_axis>
-                                    <field>time</field>
-                                    <field_type>0</field_type>
-                                    <scale>
-                                        <absolute_maximum>1000</absolute_maximum>
-                                        <absolute_minimum>0</absolute_minimum>
-                                        <relative_maximum>0</relative_maximum>
-                                        <relative_minimum>-1000</relative_minimum>
-                                        <type>0</type>
-                                    </scale>
-                                    <topic>/object_mpc_observation</topic>
-                                    <type>ocs2_msgs/mpc_observation</type>
-                                </x_axis>
-                                <y_axis>
-                                    <field>input/value/2</field>
-                                    <field_type>0</field_type>
-                                    <scale>
-                                        <absolute_maximum>1000</absolute_maximum>
-                                        <absolute_minimum>0</absolute_minimum>
-                                        <relative_maximum>0</relative_maximum>
-                                        <relative_minimum>-1000</relative_minimum>
-                                        <type>0</type>
-                                    </scale>
-                                    <topic>/object_mpc_observation</topic>
-                                    <type>ocs2_msgs/mpc_observation</type>
-                                </y_axis>
-                            </axes>
-                            <color>
-                                <custom_color>#000000</custom_color>
-                                <type>0</type>
-                            </color>
-                            <data>
-                                <circular_buffer_capacity>1000</circular_buffer_capacity>
-                                <time_frame_length>10</time_frame_length>
-                                <type>0</type>
-                            </data>
-                            <style>
-                                <lines_interpolate>false</lines_interpolate>
-                                <pen_style>1</pen_style>
-                                <pen_width>1</pen_width>
-                                <render_antialias>false</render_antialias>
-                                <steps_invert>false</steps_invert>
-                                <sticks_baseline>0</sticks_baseline>
-                                <sticks_orientation>2</sticks_orientation>
-                                <type>0</type>
-                            </style>
-                            <subscriber_queue_size>100</subscriber_queue_size>
-                            <title>Untitled Curve</title>
-                        </curve_0>
-                    </curves>
                     <legend>
                         <visible>false</visible>
                     </legend>

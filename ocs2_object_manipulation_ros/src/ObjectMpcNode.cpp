@@ -39,6 +39,10 @@ int main(int argc, char** argv) {
                                objectInterface.getInitializer());                           
   mpc.getSolverPtr()->setReferenceManager(rosReferenceManagerPtr);
 
+  // add adaptive control
+  auto adaptivecontrolPtr = objectInterface.getAdaptiveControlPtr();
+  mpc.getSolverPtr()->addSynchronizedModule(adaptivecontrolPtr);
+
   // auto obstacles = dynamic_cast<ocs2::object_manipulation::ObjectInterface&>(objectInterface).getObstacles();
   // for (auto& obstacle : obstacles) {
   //   mpc.getSolverPtr()->addSynchronizedModule(obstacle);
