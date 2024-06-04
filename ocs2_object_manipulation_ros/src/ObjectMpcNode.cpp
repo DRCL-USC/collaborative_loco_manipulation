@@ -39,6 +39,10 @@ int main(int argc, char** argv) {
                                objectInterface.getInitializer());                           
   mpc.getSolverPtr()->setReferenceManager(rosReferenceManagerPtr);
 
+  // add adaptive control
+  auto adaptivecontrolPtr = objectInterface.getAdaptiveControlPtr();
+  mpc.getSolverPtr()->addSynchronizedModule(adaptivecontrolPtr);
+
   // Launch MPC ROS node
   ocs2::MPC_ROS_Interface mpcNode(mpc, robotName);
   mpcNode.launchNodes(nodeHandle);

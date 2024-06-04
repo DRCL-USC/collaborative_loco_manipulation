@@ -2,7 +2,6 @@
 #include <string>
 
 #include "ocs2_object_manipulation/ObjectInterface.h"
-#include "ocs2_object_manipulation/dynamics/ObjectSystemDynamics.h"
 
 #include <ocs2_core/augmented_lagrangian/AugmentedLagrangian.h>
 #include <ocs2_core/constraint/LinearStateInputConstraint.h>
@@ -87,6 +86,9 @@ namespace ocs2
       problem_.costPtr->add("cost", std::make_unique<QuadraticStateInputCost>(Q, R));
       problem_.finalCostPtr->add("finalCost", std::make_unique<QuadraticStateCost>(Qf));
 
+      // adaptive control
+      adaptiveControlPtr_.reset(new AdaptiveControl(mpcSettings_.mpcDesiredFrequency_, taskFile));
+
       // Problem settings
       problem_settings_.loadSettings(taskFile, "object_parameters", verbose);
       loadData::loadStdVector(taskFile, "yaw_init", problem_settings_.agents_init_yaw_, verbose);
@@ -97,7 +99,7 @@ namespace ocs2
       }
 
       // Dynamics
-      problem_.dynamicsPtr.reset(new ObjectSytemDynamics(problem_settings_, libraryFolder, verbose));
+      problem_.dynamicsPtr.reset(new ObjectSytemDynamics(problem_settings_, adaptiveControlPtr_, libraryFolder, verbose));
 
       // Rollout
       auto rolloutSettings = rollout::loadSettings(taskFile, "rollout", verbose);
@@ -141,7 +143,7 @@ namespace ocs2
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 60;
+        boxConstraint.upperBound = 80;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
 

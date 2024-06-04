@@ -3,8 +3,7 @@ windows:
   - layout: tiled
     panes:
       - shell_command:
-        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true 
-          multiplot:=false
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true multiplot:=true
       - shell_command:
         - sleep 2
         - roslaunch unitree_description spawn_robot.launch robot_type:=aliengo ns:=alien1 x_pos:=-0.7 y_pos:=0.0 yaw_angle:=0.0 
