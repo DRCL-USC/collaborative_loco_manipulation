@@ -87,7 +87,7 @@ namespace ocs2
       problem_.finalCostPtr->add("finalCost", std::make_unique<QuadraticStateCost>(Qf));
 
       // adaptive control
-      adaptiveControlPtr_.reset(new AdaptiveControl(mpcSettings_.mpcDesiredFrequency_));
+      adaptiveControlPtr_.reset(new AdaptiveControl(mpcSettings_.mpcDesiredFrequency_, taskFile));
 
       // Problem settings
       problem_settings_.loadSettings(taskFile, "object_parameters", verbose);
@@ -143,7 +143,7 @@ namespace ocs2
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 100;
+        boxConstraint.upperBound = 80;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
 

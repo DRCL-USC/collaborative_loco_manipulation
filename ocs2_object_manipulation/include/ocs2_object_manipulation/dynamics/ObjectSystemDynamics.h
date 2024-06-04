@@ -34,10 +34,12 @@ namespace ocs2
 
       ObjectSytemDynamics *clone() const override { return new ObjectSytemDynamics(*this); }
 
-      vector_t getFlowMapParameters(scalar_t time, const PreComputation & /* preComputation */) const override { 
-        return adaptiveControlPtr_->getAdaptiveLaw();}
+      vector_t getFlowMapParameters(scalar_t time, const PreComputation & /* preComputation */) const override
+      {
+        return adaptiveControlPtr_->getAdaptiveLaw();
+      }
 
-      size_t getNumFlowMapParameters() const { return adaptiveControlPtr_->getAdaptiveLaw().size(); }  
+      size_t getNumFlowMapParameters() const { return adaptiveControlPtr_->getAdaptiveLaw().size(); }
 
       ad_vector_t systemFlowMap(ad_scalar_t time, const ad_vector_t &state, const ad_vector_t &input,
                                 const ad_vector_t &parameters) const override
@@ -58,7 +60,8 @@ namespace ocs2
             static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(0.0), static_cast<ad_scalar_t>(param_.Inertia_);
 
         // RHS
-        Eigen::Matrix<ad_scalar_t, 3, 1> rhs(total_forces_w(0), total_forces_w(1), -input(0) * input(2) - input(1) * input(3));
+        Eigen::Matrix<ad_scalar_t, 3, 1> rhs(total_forces_w(0) - parameters(0), total_forces_w(1) - parameters(1),
+                                             -input(0) * input(2) - input(1) * input(3));
 
         // dxdt
         ad_vector_t stateDerivative(STATE_DIM);

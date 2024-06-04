@@ -1,6 +1,8 @@
 
 #include <ocs2_core/Types.h>
 #include <ocs2_oc/synchronized_module/SolverSynchronizedModule.h>
+#include <ocs2_object_manipulation/LowPassFilter.h>
+#include <ocs2_core/misc/LoadData.h>
 
 namespace ocs2
 {
@@ -10,68 +12,60 @@ namespace ocs2
         class AdaptiveControl : public SolverSynchronizedModule
         {
         public:
-            AdaptiveControl(scalar_t mpcDesiredFrequency) : dt(1 / mpcDesiredFrequency)
+            AdaptiveControl(scalar_t mpcDesiredFrequency, const std::string &taskFile) : dt(1 / mpcDesiredFrequency)
             {
-                Gamma.resize(4);
-                Gamma << 1, 1, 1, 1;
-                Gamma = Gamma ;
-                a_hat.resize(4);
-                a_hat_dot.resize(4);
+                loadData::loadEigenMatrix(taskFile, prefix + "Gamma", Gamma);
+                loadData::loadEigenMatrix(taskFile, prefix + "bounds", bounds);
+                loadData::loadCppDataType(taskFile, prefix + "Kd", Kd);
+                loadData::loadCppDataType(taskFile, prefix + "alpha", alpha);
+                loadData::loadCppDataType(taskFile, prefix + "lambda", lambda);
+
                 a_hat.setZero();
                 a_hat_dot.setZero();
 
                 Y.resize(3, 4);
-                Y_H.resize(3, 4);
-                Y_C.resize(3, 4);
                 Y.setZero();
-                Y_H.setZero();
-                Y_C.setZero();
-                primalSolution_.stateTrajectory_.push_back(vector_t::Zero(6));
-                primalSolution_.stateTrajectory_.push_back(vector_t::Zero(6));
 
                 adaptive_law.setZero();
+                lpf.reset(new LowPassFilter<vector_t>(alpha));
             };
 
-            vector_t update(vector_t currentObservation, vector_t nextObservation, vector_t ddq_d)
+            vector_t update(vector_t q, vector_t dq, vector_t q_d, vector_t dq_d, vector_t ddq_d)
             {
-                vector_t q = currentObservation.head(3);
-                vector_t dq = currentObservation.tail(3);
-                vector_t q_d = nextObservation.head(3);
-                vector_t dq_d = nextObservation.tail(3);
 
-                vector_t q_e = q - q_d;
-                vector_t dq_e = dq - dq_d;
-
-                scalar_t lambda = 1.0;
-
-                vector_t s = dq_e + lambda * q_e;
+                vector_t s = (dq - dq_d) + lambda * (q - q_d);
                 vector_t dq_r = dq - s;
                 vector_t ddq_r = ddq_d - lambda * (dq - dq_d);
 
                 a_hat_dot = Gamma.asDiagonal() * Y.transpose() * s;
-                a_hat -= dt * a_hat_dot; 
+                a_hat -= dt * a_hat_dot;
 
-                Y_H << ddq_r(0), 0, -sin(q(2)) * ddq_r(2), cos(q(2)) * ddq_r(2),
+                matrix_t Y_H = (matrix_t(3,4) << ddq_r(0), 0, -sin(q(2)) * ddq_r(2), cos(q(2)) * ddq_r(2),
                     ddq_r(1), 0, -cos(q(2)) * ddq_r(2), -sin(q(2)) * ddq_r(2),
-                    0, ddq_r(2), -sin(q(2)) * ddq_r(0) - cos(q(2)) * ddq_r(1), cos(q(2)) * ddq_r(0) - sin(q(2)) * ddq_r(1);
+                    0, ddq_r(2), -sin(q(2)) * ddq_r(0) - cos(q(2)) * ddq_r(1), cos(q(2)) * ddq_r(0) - sin(q(2)) * ddq_r(1)).finished();
 
-                Y_C << 0, 0, dq(2) * dq_r(2), 0,
+                matrix_t Y_C = (matrix_t(3,4) << 0, 0, dq(2) * dq_r(2), 0,
                     0, 0, 0, dq(2) * dq_r(2),
-                    0, 0, 0, 0;
+                    0, 0, 0, 0).finished();
 
                 Y = Y_H + Y_C;
 
-                return Y * a_hat;
+                return -Kd * s + Y * a_hat;
             };
 
             void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t &currentState,
                               const ReferenceManagerInterface &referenceManager) override
             {
-                adaptive_law = update(currentState.head(6), primalSolution_.stateTrajectory_[1], vector_t::Zero(3));
-                saturate(adaptive_law, -20, 20);
-                std::cout << "Adaptive control law: " << adaptive_law.transpose() << "\n";
-                // std::cout << "Target: " << primalSolution_.stateTrajectory_[1].transpose() << "\n";
-                // std::cout << "Current: " << currentState.head(6).transpose() << "\n";
+                if (primalSolution_.stateTrajectory_.size() > 1)
+                {
+
+                    vector_t q_d = primalSolution_.stateTrajectory_.back();
+
+                    adaptive_law = update(currentState.head(3), currentState.segment<3>(3), q_d.head(3), q_d.segment<3>(3), vector_t::Zero(3));
+                    adaptive_law = lpf->process(adaptive_law);
+                    saturate(adaptive_law, -bounds, bounds);
+                    std::cout << "Adaptive control law: " << adaptive_law.transpose() << "\n";
+                }
             }
 
             void postSolverRun(const PrimalSolution &primalSolution) override
@@ -84,22 +78,15 @@ namespace ocs2
                 return adaptive_law;
             };
 
-            
-            void saturate(Eigen::Vector3d& vec, double min_val, double max_val)
-            {
-                for (int i = 0; i < vec.size(); ++i)
-                {
-                    vec(i) = std::min(std::max(vec(i), min_val), max_val);
-                }
-            }
-
         private:
-            vector_t Gamma;
-            vector_t a_hat, a_hat_dot;
-            matrix_t Y, Y_H, Y_C;
-            Eigen::Vector3d adaptive_law;
+            const std::string prefix = "adaptive_control.";
+            vector_t Gamma{4}, bounds{3}, adaptive_law{3}, a_hat{4}, a_hat_dot{4};
+            scalar_t Kd = 0.0, alpha = 0.1, lambda = 1.0;
+            matrix_t Y;
             PrimalSolution primalSolution_;
             scalar_t dt;
+            std::unique_ptr<LowPassFilter<vector_t>> lpf;
+            
         };
 
     } // namespace object_manipulation

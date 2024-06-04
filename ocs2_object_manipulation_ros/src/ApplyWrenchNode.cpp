@@ -12,6 +12,7 @@
 #include <ros/package.h>
 #include <ocs2_core/misc/LoadData.h>
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
+#include <ocs2_object_manipulation/LowPassFilter.h>
 
 using namespace ocs2;
 using namespace object_manipulation;
@@ -39,6 +40,7 @@ int main(int argc, char **argv)
     scalar_array_t agents_init_yaw_ = {0.0, 0.0};
     const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/mpc/task.info";
     loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
+    LowPassFilter<scalar_t> lpf(0.1);
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
@@ -64,7 +66,7 @@ int main(int argc, char **argv)
             pub_wrench[i].publish(wrench_msg[i]);
 
             pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25;
-            pose_msg[i].position.y = obj_pose_robot_frame(1) + observationPtr_->input(2 + i);
+            pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
             pose_msg[i].position.z = 0.0;
             pub_pose[i].publish(pose_msg[i]);
 
