@@ -57,6 +57,10 @@ int main(int argc, char **argv)
                                                                          observationPtr_->state(1), 0.0)
                                                                             .finished();
 
+            Eigen::Matrix<scalar_t, 3, 1> obj_vel_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(3),
+                                                                         observationPtr_->state(4), 0.0)
+                                                                            .finished();                                                                
+
             wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
             wrench_msg[i].force.y = 0;
             wrench_msg[i].force.z = 0;
@@ -65,13 +69,13 @@ int main(int argc, char **argv)
             wrench_msg[i].torque.z = 0;
             pub_wrench[i].publish(wrench_msg[i]);
 
-            pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25;
+            pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length 
             pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
             pose_msg[i].position.z = 0.0;
             pub_pose[i].publish(pose_msg[i]);
 
-            twist_msg[i].linear.x = 0;
-            twist_msg[i].linear.y = 0;
+            twist_msg[i].linear.x = obj_vel_robot_frame(0);
+            twist_msg[i].linear.y = obj_vel_robot_frame(1);
             twist_msg[i].linear.z = 0;
             twist_msg[i].angular.x = 0;
             twist_msg[i].angular.y = 0;
