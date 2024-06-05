@@ -11,20 +11,30 @@ namespace ocs2
     class CBF_Constraint final : public StateConstraint
     {
     public:
-      CBF_Constraint(vector_t pos, scalar_t alpha)
-          : StateConstraint(ConstraintOrder::Quadratic), pos_(pos.head(2)), r_(pos(2)), alpha_(alpha){};
+      CBF_Constraint(std::vector<std::pair<scalar_t, scalar_t>> pos_array, scalar_array_t radius_array, scalar_t alpha)
+          : StateConstraint(ConstraintOrder::Quadratic), pos_array_(pos_array), radius_array_(radius_array), alpha_(alpha)
+      {
+        assert(pos_array_.size() == radius_array_.size());
+      };
 
       ~CBF_Constraint() override = default;
       CBF_Constraint *clone() const override { return new CBF_Constraint(*this); }
 
-      size_t getNumConstraints(scalar_t time) const override { return 1; };
+      size_t getNumConstraints(scalar_t time) const override { return pos_array_.size(); };
 
       vector_t getValue(scalar_t time, const vector_t &state, const PreComputation &preComp) const override
       {
-        scalar_t B = -(r_ + 0.75) * (r_ + 0.75) + (state(0) - pos_(0)) * (state(0) - pos_(0)) + (state(1) - pos_(1)) * (state(1) - pos_(1)); 
-        scalar_t H = alpha_ * B + 2 * (state(0) - pos_(0)) * state(3) + 2 * (state(1) - pos_(1)) * state(4);
-        return (vector_t(1) << H).finished();
+        vector_t constraint(pos_array_.size());
+
+        for (size_t i = 0; i < pos_array_.size(); ++i)
+        {
+          scalar_t B = -(radius_array_[i] + 0.75) * (radius_array_[i] + 0.75) + (state(0) - pos_array_[i].first) * (state(0) - pos_array_[i].first) + (state(1) - pos_array_[i].second) * (state(1) - pos_array_[i].second);
+          constraint(i) = alpha_ * B + 2 * (state(0) - pos_array_[i].first) * state(3) + 2 * (state(1) - pos_array_[i].second) * state(4);
+        }
+
+        return constraint;
       };
+
       VectorFunctionLinearApproximation getLinearApproximation(scalar_t time, const vector_t &state,
                                                                const PreComputation &preComp) const override
       {
@@ -32,9 +42,14 @@ namespace ocs2
 
         linearApproximation.f = getValue(time, state, preComp);
 
-        matrix_t C = (matrix_t(1, state.size()) << 2 * (state(0) - pos_(0)) + 2 * state(3), 2 * (state(1) - pos_(1)) + 2 * state(4),
-                      0, 2 * (state(0) - pos_(0)), 2 * (state(1) - pos_(1)), 0)
-                         .finished();
+        matrix_t C(pos_array_.size(), state.size());
+
+        for (size_t i = 0; i < pos_array_.size(); ++i)
+        {
+          C.row(i) << 2 * (state(0) - pos_array_[i].first) + 2 * state(3), 2 * (state(1) - pos_array_[i].second) + 2 * state(4),
+              0, 2 * (state(0) - pos_array_[i].first), 2 * (state(1) - pos_array_[i].second), 0;
+        }
+
         linearApproximation.dfdx = C;
         return linearApproximation;
       };
@@ -55,15 +70,19 @@ namespace ocs2
         dC(4, 1) = 2;
         dC(0, 3) = 2;
         dC(1, 4) = 2;
-        quadraticApproximation.dfdxx.emplace_back(dC);
+
+        for (size_t i = 0; i < pos_array_.size(); ++i)
+        {
+          quadraticApproximation.dfdxx.emplace_back(dC);
+        }
 
         return quadraticApproximation;
       }
 
     private:
       CBF_Constraint(const CBF_Constraint &other) = default;
-      vector_t pos_;
-      scalar_t r_;
+      const std::vector<std::pair<scalar_t, scalar_t>> pos_array_;
+      const scalar_array_t radius_array_;
       scalar_t alpha_;
     };
 

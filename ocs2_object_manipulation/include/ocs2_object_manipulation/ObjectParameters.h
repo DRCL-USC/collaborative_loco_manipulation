@@ -45,7 +45,6 @@ struct ObjectManipulationParameters {
   scalar_t rx_ = 1.0;     // [m]
   scalar_t ry_ = 6.0;       // [m]
   scalar_array_t agents_init_yaw_ = {0.0, 0.0};
-  matrix_t obstacles_ = matrix_t::Zero(OBSTACLE_COUNT, 3);
 
  private:
 

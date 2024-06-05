@@ -1,12 +1,19 @@
 #include "ocs2_object_manipulation_ros/ObjectDummyVisualization.h"
 #include <ocs2_ros_interfaces/visualization/VisualizationHelpers.h>
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
+#include <ocs2_core/misc/LoadData.h>
+#include <ocs2_core/misc/LoadStdVectorOfPair.h>
 
 namespace ocs2
 {
   namespace object_manipulation
   {
 
+    ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile): taskFile_(taskfile) { 
+          loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
+          loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
+          launchVisualizerNode(nodeHandle); }
+          
     void ObjectDummyVisualization::update(const SystemObservation &observation, const PrimalSolution &policy, const CommandData &command)
     {
 
@@ -204,7 +211,7 @@ namespace ocs2
         marker.action = visualization_msgs::Marker::ADD;
 
         Eigen::Matrix<scalar_t, 3, 1> euler;
-        euler << observation.state(2) + params_.agents_init_yaw_[i], 0.0, 0.0;
+        euler << observation.state(2) + init_yaw[i], 0.0, 0.0;
         Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
         auto scaled_input = observation.input(i) / 80;
@@ -267,11 +274,11 @@ namespace ocs2
       marker.pose.orientation.w = 1.0;
 
       // Define a list of points
-      for (int i = 0; i < OBSTACLE_COUNT; i++)
+      for (int i = 0; i < obstacles_pose.size(); i++)
       {
         geometry_msgs::Point p;
-        p.x = params_.obstacles_(i, 0);
-        p.y = params_.obstacles_(i, 1);
+        p.x = obstacles_pose[i].first;
+        p.y = obstacles_pose[i].second;
         p.z = 0.25;
         marker.points.push_back(p);
       }
@@ -302,11 +309,11 @@ namespace ocs2
       marker2.pose.orientation.w = 1.0;
 
       // Define a list of points
-      for (int i = 0; i < OBSTACLE_COUNT; i++)
+      for (int i = 0; i < obstacles_pose.size(); i++)
       {
         geometry_msgs::Point p;
-        p.x = params_.obstacles_(i, 0);
-        p.y = params_.obstacles_(i, 1);
+        p.x = obstacles_pose[i].first;
+        p.y = obstacles_pose[i].second;
         p.z = 0.25;
         marker2.points.push_back(p);
       }
