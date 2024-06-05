@@ -113,8 +113,9 @@ mpc
 
 cbf_penalty_config
 {
-  mu                       1
+  mu                       0.5
   delta                    0.5
+  alpha                    1
 }
 
 ; initial state

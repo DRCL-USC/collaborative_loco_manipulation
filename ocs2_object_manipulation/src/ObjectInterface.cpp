@@ -93,7 +93,8 @@ namespace ocs2
       problem_settings_.loadSettings(taskFile, "object_parameters", verbose);
       loadData::loadStdVector(taskFile, "yaw_init", problem_settings_.agents_init_yaw_, verbose);
       loadData::loadEigenMatrix(taskFile, "obstacles", problem_settings_.obstacles_);
-      if (verbose){
+      if (verbose)
+      {
         std::cerr << "obstacles:  \n"
                   << problem_settings_.obstacles_ << "\n";
       }
@@ -108,19 +109,20 @@ namespace ocs2
       // Constraints
 
       // CBFs
-      boost::property_tree::ptree pt;
-      boost::property_tree::read_info(taskFile, pt);
       RelaxedBarrierPenalty::Config boundsConfig;
-      loadData::loadPtreeValue(pt, boundsConfig.mu, "cbf_penalty_config.mu", verbose);
-      loadData::loadPtreeValue(pt, boundsConfig.delta, "cbf_penalty_config.delta", verbose);
+      scalar_t alpha;
+      loadData::loadCppDataType(taskFile, "cbf_penalty_config.mu", boundsConfig.mu);
+      loadData::loadCppDataType(taskFile, "cbf_penalty_config.delta", boundsConfig.delta);
+      loadData::loadCppDataType(taskFile, "cbf_penalty_config.alpha", alpha);
 
       std::unique_ptr<PenaltyBase> ObstaclePenalty[2];
 
       for (int i = 0; i < problem_settings_.obstacles_.rows(); ++i)
       {
         ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(boundsConfig.mu, boundsConfig.delta)));
-                        problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),std::unique_ptr<StateCost>(new StateSoftConstraint
-                        (std::make_unique<CBF_Constraint>(problem_settings_.obstacles_.row(i)), std::move(ObstaclePenalty[i]))));
+        problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
+                                             std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(problem_settings_.obstacles_.row(i), alpha),
+                                                                                                std::move(ObstaclePenalty[i]))));
       }
 
       // Box constraints
@@ -143,7 +145,7 @@ namespace ocs2
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 80;
+        boxConstraint.upperBound = 70;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
 
