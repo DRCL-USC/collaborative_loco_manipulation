@@ -8,17 +8,17 @@ namespace ocs2
   namespace object_manipulation
   {
 
-    class CBF_Constraint final : public StateConstraint
+    class ObjectCBFConstraint final : public StateConstraint
     {
     public:
-      CBF_Constraint(std::vector<std::pair<scalar_t, scalar_t>> pos_array, scalar_array_t radius_array, scalar_t alpha)
+      ObjectCBFConstraint(std::vector<std::pair<scalar_t, scalar_t>> pos_array, scalar_array_t radius_array, scalar_t alpha)
           : StateConstraint(ConstraintOrder::Quadratic), pos_array_(pos_array), radius_array_(radius_array), alpha_(alpha)
       {
         assert(pos_array_.size() == radius_array_.size());
       };
 
-      ~CBF_Constraint() override = default;
-      CBF_Constraint *clone() const override { return new CBF_Constraint(*this); }
+      ~ObjectCBFConstraint() override = default;
+      ObjectCBFConstraint *clone() const override { return new ObjectCBFConstraint(*this); }
 
       size_t getNumConstraints(scalar_t time) const override { return pos_array_.size(); };
 
@@ -80,7 +80,7 @@ namespace ocs2
       }
 
     private:
-      CBF_Constraint(const CBF_Constraint &other) = default;
+      ObjectCBFConstraint(const ObjectCBFConstraint &other) = default;
       const std::vector<std::pair<scalar_t, scalar_t>> pos_array_;
       const scalar_array_t radius_array_;
       scalar_t alpha_;

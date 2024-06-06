@@ -14,7 +14,7 @@
 #include <ocs2_core/penalties/Penalties.h>
 #include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
 #include <ocs2_core/soft_constraint/StateSoftConstraint.h>
-#include <ocs2_object_manipulation/CBFConstraint.h>
+#include <ocs2_object_manipulation/CBFs/ObjectCBFConstraint.h>
 #include <ocs2_core/soft_constraint/StateInputSoftBoxConstraint.h>
 
 // Boost
@@ -117,7 +117,7 @@ namespace ocs2
       loadData::loadStdVector(taskFile, "obstacles.radius", obstacles_radius, verbose);
 
       problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
-                                           std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(obstacles_pose, obstacles_radius, alpha),
+                                           std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstacles_pose, obstacles_radius, alpha),
                                                                                               std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
 
       // Box constraints
@@ -125,14 +125,6 @@ namespace ocs2
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> stateLimits;
       stateLimits.reserve(STATE_DIM);
-      for (int i = 0; i < 2; ++i)
-      {
-        boxConstraint.index = 3 + i;
-        boxConstraint.lowerBound = -2;
-        boxConstraint.upperBound = 2;
-        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
-        // stateLimits.push_back(boxConstraint);
-      }
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
       inputLimits.reserve(INPUT_DIM);
