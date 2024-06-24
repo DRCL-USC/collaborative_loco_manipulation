@@ -10,10 +10,11 @@
 #include <ocs2_core/cost/QuadraticStateInputCost.h>
 #include <ocs2_core/initialization/DefaultInitializer.h>
 #include <ocs2_core/misc/LoadData.h>
+#include <ocs2_core/misc/LoadStdVectorOfPair.h>
 #include <ocs2_core/penalties/Penalties.h>
 #include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
 #include <ocs2_core/soft_constraint/StateSoftConstraint.h>
-#include <ocs2_object_manipulation/CBFConstraint.h>
+#include <ocs2_object_manipulation/CBFs/ObjectCBFConstraint.h>
 #include <ocs2_core/soft_constraint/StateInputSoftBoxConstraint.h>
 
 // Boost
@@ -92,12 +93,6 @@ namespace ocs2
       // Problem settings
       problem_settings_.loadSettings(taskFile, "object_parameters", verbose);
       loadData::loadStdVector(taskFile, "yaw_init", problem_settings_.agents_init_yaw_, verbose);
-      loadData::loadEigenMatrix(taskFile, "obstacles", problem_settings_.obstacles_);
-      if (verbose)
-      {
-        std::cerr << "obstacles:  \n"
-                  << problem_settings_.obstacles_ << "\n";
-      }
 
       // Dynamics
       problem_.dynamicsPtr.reset(new ObjectSytemDynamics(problem_settings_, adaptiveControlPtr_, libraryFolder, verbose));
@@ -110,34 +105,26 @@ namespace ocs2
 
       // CBFs
       RelaxedBarrierPenalty::Config boundsConfig;
-      scalar_t alpha;
       loadData::loadCppDataType(taskFile, "cbf_penalty_config.mu", boundsConfig.mu);
       loadData::loadCppDataType(taskFile, "cbf_penalty_config.delta", boundsConfig.delta);
+
+      scalar_t alpha;
       loadData::loadCppDataType(taskFile, "cbf_penalty_config.alpha", alpha);
 
-      std::unique_ptr<PenaltyBase> ObstaclePenalty[2];
+      std::vector<std::pair<scalar_t, scalar_t>> obstacles_pose;
+      scalar_array_t obstacles_radius;
+      loadData::loadStdVectorOfPair(taskFile, "obstacles.pose", obstacles_pose, verbose);
+      loadData::loadStdVector(taskFile, "obstacles.radius", obstacles_radius, verbose);
 
-      for (int i = 0; i < problem_settings_.obstacles_.rows(); ++i)
-      {
-        ObstaclePenalty[i].reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(boundsConfig.mu, boundsConfig.delta)));
-        problem_.stateSoftConstraintPtr->add("Obstacle" + std::to_string(i),
-                                             std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<CBF_Constraint>(problem_settings_.obstacles_.row(i), alpha),
-                                                                                                std::move(ObstaclePenalty[i]))));
-      }
+      problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
+                                           std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstacles_pose, obstacles_radius, alpha),
+                                                                                              std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
 
       // Box constraints
       StateInputSoftBoxConstraint::BoxConstraint boxConstraint;
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> stateLimits;
       stateLimits.reserve(STATE_DIM);
-      for (int i = 0; i < 2; ++i)
-      {
-        boxConstraint.index = 3 + i;
-        boxConstraint.lowerBound = -2;
-        boxConstraint.upperBound = 2;
-        boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
-        // stateLimits.push_back(boxConstraint);
-      }
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
       inputLimits.reserve(INPUT_DIM);
