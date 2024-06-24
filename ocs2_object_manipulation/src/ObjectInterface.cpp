@@ -15,6 +15,7 @@
 #include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
 #include <ocs2_core/soft_constraint/StateSoftConstraint.h>
 #include <ocs2_object_manipulation/CBFs/ObjectCBFConstraint.h>
+#include <ocs2_object_manipulation/CBFs/RobotCBFConstraint.h>
 #include <ocs2_core/soft_constraint/StateInputSoftBoxConstraint.h>
 
 // Boost
@@ -116,9 +117,15 @@ namespace ocs2
       loadData::loadStdVectorOfPair(taskFile, "obstacles.pose", obstacles_pose, verbose);
       loadData::loadStdVector(taskFile, "obstacles.radius", obstacles_radius, verbose);
 
+      // Object CBF
       problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
                                            std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstacles_pose, obstacles_radius, alpha),
                                                                                               std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
+      
+      // Robot CBF
+      problem_.softConstraintPtr->add("Obstacle_robot_cbf",
+                                            std::unique_ptr<StateInputCost>(new StateInputSoftConstraint(std::make_unique<RobotCBFConstraint>(obstacles_pose, obstacles_radius, alpha, problem_settings_.agents_init_yaw_),
+                                                                                                  std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
 
       // Box constraints
       StateInputSoftBoxConstraint::BoxConstraint boxConstraint;

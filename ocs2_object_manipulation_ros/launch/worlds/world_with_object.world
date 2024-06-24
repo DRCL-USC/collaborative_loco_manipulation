@@ -41,8 +41,8 @@
                     <surface>
                         <friction>
                             <ode>
-                                <mu>0.2</mu>
-                                <mu2>0.2</mu2>
+                                <mu>0.1</mu>
+                                <mu2>0.1</mu2>
                             </ode>
                         </friction>
                         <contact>
@@ -63,61 +63,16 @@
                 </visual>
             </link>
 
-            <link name="dummy_1">
-                <pose>0 0 0.0 0 0 0</pose>
-                <inertial>
-                    <mass>0.005</mass>
-                    <inertia>
-                        <ixx>0.0001</ixx>
-                        <ixy>0.0</ixy>
-                        <ixz>0.0</ixz>
-                        <iyy>0.001</iyy>
-                        <iyz>0.0</iyz>
-                        <izz>0.0001</izz>
-                    </inertia>
-                </inertial>
-            </link>
-
-            <joint name="joint_1" type="fixed">
-                <parent>object</parent>
-                <child>dummy_1</child>
-                <pose>0 0 0 0 0 0</pose>
-            </joint>
-
-            <link name="dummy_2">
-                <pose>0 0 0.0 0 0 1.5708</pose>
-                <inertial>
-                    <mass>0.005</mass>
-                    <inertia>
-                        <ixx>0.0001</ixx>
-                        <ixy>0.0</ixy>
-                        <ixz>0.0</ixz>
-                        <iyy>0.001</iyy>
-                        <iyz>0.0</iyz>
-                        <izz>0.0001</izz>
-                    </inertia>
-                </inertial>
-            </link>
-
-            <joint name="joint_2" type="fixed">
-                <parent>object</parent>
-                <child>dummy_2</child>
-                <pose>0 0 0 0 0 0</pose>
-            </joint>
-
-            <!-- <plugin name="r1_force" filename="libApplyBodyForce.so">
-                <robotNamespace>/robot_1</robotNamespace>
-                <bodyName>dummy_1</bodyName>
-                <ForceTopicName>wrench</ForceTopicName>
-                <referencePointTopicName>contactPoint</referencePointTopicName>
+            <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+                <alwaysOn>true</alwaysOn>
+                <updateRate>1000.0</updateRate>
+                <bodyName>object</bodyName>
+                <topicName>/object/state</topicName>
+                <gaussianNoise>0</gaussianNoise>
+                <frameName>world</frameName>
+                <xyzOffsets>0 0 0</xyzOffsets>
+                <rpyOffsets>0 0 0</rpyOffsets>
             </plugin>
-
-            <plugin name="r2_force" filename="libApplyBodyForce.so">
-                <robotNamespace>/robot_2</robotNamespace>
-                <bodyName>dummy_2</bodyName>
-                <ForceTopicName>wrench</ForceTopicName>
-                <referencePointTopicName>contactPoint</referencePointTopicName>
-            </plugin> -->
 
         </model>
 
