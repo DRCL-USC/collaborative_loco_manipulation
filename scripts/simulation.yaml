@@ -8,6 +8,6 @@ windows:
         - sleep 6
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
     shell_command_before:
-      - cd ~/Projects/ocs2_ws/
+      - cd ~/Projects/manipulation_ws/
       - source devel/setup.bash 
     window_name: Controller
