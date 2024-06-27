@@ -9,15 +9,18 @@ namespace ocs2
   namespace object_manipulation
   {
 
-    ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile): taskFile_(taskfile) { 
-          loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
-          loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
-          launchVisualizerNode(nodeHandle); }
-          
+    ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile, std::shared_ptr<Obstacles> obstacles) : taskFile_(taskfile), obstacles_(obstacles)
+    {
+      loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
+      loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
+      launchVisualizerNode(nodeHandle);
+    }
+
     void ObjectDummyVisualization::update(const SystemObservation &observation, const PrimalSolution &policy, const CommandData &command)
     {
 
       const auto timeStamp = ros::Time::now();
+      obstacles_pose = obstacles_->getObstacles();
 
       // Publish object trajectory
       visualization_msgs::MarkerArray objectmarkers;
@@ -285,7 +288,7 @@ namespace ocs2
 
       markerArray.markers.push_back(marker);
 
-      //Marker visualization
+      // Marker visualization
       visualization_msgs::Marker marker2;
       marker2.header.frame_id = frameId_;
       marker2.header.stamp = timeStamp;
