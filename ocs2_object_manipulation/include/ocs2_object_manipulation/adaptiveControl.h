@@ -64,7 +64,7 @@ namespace ocs2
                     adaptive_law = update(currentState.head(3), currentState.segment<3>(3), q_d.head(3), q_d.segment<3>(3), vector_t::Zero(3));
                     adaptive_law = lpf->process(adaptive_law);
                     saturate(adaptive_law, -bounds, bounds);
-                    // std::cout << "Adaptive control law: " << adaptive_law.transpose() << "\n";
+                    std::cout << "Adaptive control law: " << adaptive_law.transpose() << "\n";
                 }
             }
 

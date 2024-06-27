@@ -5,7 +5,7 @@
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
 
-// #include <ocs2_object_manipulation/ObjectInterface.h>
+#include <ocs2_object_manipulation/ObjectInterface.h>
 #include <ocs2_object_manipulation/definitions.h>
 
 #include "ocs2_object_manipulation_ros/ObjectDummyVisualization.h"
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   mrt.launchNodes(nodeHandle);
 
   // Visualization
-  auto objectDummyVisualization = std::make_shared<ocs2::object_manipulation::ObjectDummyVisualization>(nodeHandle, taskFile, objectInterface.getObstaclesPtr());
+  auto objectDummyVisualization = std::make_shared<ocs2::object_manipulation::ObjectDummyVisualization>(nodeHandle, taskFile);
 
   // initial state
   ocs2::SystemObservation initObservation;

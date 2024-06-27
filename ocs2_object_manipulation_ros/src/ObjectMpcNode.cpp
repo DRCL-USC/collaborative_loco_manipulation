@@ -43,10 +43,6 @@ int main(int argc, char** argv) {
   auto adaptivecontrolPtr = objectInterface.getAdaptiveControlPtr();
   mpc.getSolverPtr()->addSynchronizedModule(adaptivecontrolPtr);
 
-  //add obstacles
-  auto obstaclesPtr = objectInterface.getObstaclesPtr();
-  mpc.getSolverPtr()->addSynchronizedModule(obstaclesPtr);
-
   // Launch MPC ROS node
   ocs2::MPC_ROS_Interface mpcNode(mpc, robotName);
   mpcNode.launchNodes(nodeHandle);
