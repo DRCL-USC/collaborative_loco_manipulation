@@ -2,6 +2,7 @@
 #pragma once
 
 #include <ocs2_core/constraint/StateConstraint.h>
+#include <ocs2_object_manipulation/Obstacles.h>
 
 namespace ocs2
 {
@@ -11,10 +12,12 @@ namespace ocs2
     class ObjectCBFConstraint final : public StateConstraint
     {
     public:
-      ObjectCBFConstraint(std::vector<std::pair<scalar_t, scalar_t>> pos_array, scalar_array_t radius_array, scalar_t alpha)
-          : StateConstraint(ConstraintOrder::Quadratic), pos_array_(pos_array), radius_array_(radius_array), alpha_(alpha)
+      ObjectCBFConstraint(std::shared_ptr<Obstacles> obstacles, scalar_array_t radius_array, scalar_t alpha)
+          : StateConstraint(ConstraintOrder::Quadratic), radius_array_(radius_array), alpha_(alpha)
       {
+        pos_array_ = obstacles->getObstacles();
         assert(pos_array_.size() == radius_array_.size());
+
       };
 
       ~ObjectCBFConstraint() override = default;
@@ -81,7 +84,7 @@ namespace ocs2
 
     private:
       ObjectCBFConstraint(const ObjectCBFConstraint &other) = default;
-      const std::vector<std::pair<scalar_t, scalar_t>> pos_array_;
+      std::vector<std::pair<scalar_t, scalar_t>> pos_array_;
       const scalar_array_t radius_array_;
       scalar_t alpha_;
     };
