@@ -3,6 +3,7 @@
 
 #include <ocs2_core/constraint/StateConstraint.h>
 #include <ocs2_object_manipulation/Obstacles.h>
+#include <ocs2_object_manipulation/Obstacles.h>
 
 namespace ocs2
 {
