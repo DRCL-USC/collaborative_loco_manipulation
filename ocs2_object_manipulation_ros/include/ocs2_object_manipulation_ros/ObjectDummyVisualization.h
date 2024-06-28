@@ -7,7 +7,6 @@
 
 #include "ocs2_object_manipulation/definitions.h"
 #include <visualization_msgs/MarkerArray.h>
-#include <ocs2_object_manipulation/ObjectInterface.h>
 
 namespace ocs2
 {
@@ -21,7 +20,7 @@ namespace ocs2
       std::string frameId_ = "world";                                                                 // Frame name all messages are published in
       scalar_t trajectoryLineWidth_ = 0.01;                                                          // LineThickness for trajectories
 
-      explicit ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile, std::shared_ptr<Obstacles> obstacles);
+      explicit ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile);
 
       ~ObjectDummyVisualization() override = default;
 
@@ -45,7 +44,6 @@ namespace ocs2
       const std::string taskFile_;
       scalar_array_t init_yaw;
       std::vector<std::pair<scalar_t, scalar_t>> obstacles_pose;
-      std::shared_ptr<Obstacles> obstacles_;
     };
 
   } // namespace object_manipulation
