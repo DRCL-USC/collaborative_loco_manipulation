@@ -2,6 +2,7 @@
 #pragma once
 
 #include <ocs2_core/constraint/StateConstraint.h>
+#include <ocs2_object_manipulation/Obstacles.h>
 
 namespace ocs2
 {
@@ -11,19 +12,18 @@ namespace ocs2
     class ObjectCBFConstraint final : public StateConstraint
     {
     public:
-      ObjectCBFConstraint(std::vector<std::pair<scalar_t, scalar_t>> pos_array, scalar_array_t radius_array, scalar_t alpha)
-          : StateConstraint(ConstraintOrder::Quadratic), pos_array_(pos_array), radius_array_(radius_array), alpha_(alpha)
-      {
-        assert(pos_array_.size() == radius_array_.size());
-      };
+      ObjectCBFConstraint(std::shared_ptr<Obstacles> obstacles, scalar_array_t radius_array, scalar_t alpha)
+          : StateConstraint(ConstraintOrder::Quadratic), radius_array_(radius_array), alpha_(alpha), obstacles_(obstacles) {};
 
       ~ObjectCBFConstraint() override = default;
       ObjectCBFConstraint *clone() const override { return new ObjectCBFConstraint(*this); }
 
-      size_t getNumConstraints(scalar_t time) const override { return pos_array_.size(); };
+      size_t getNumConstraints(scalar_t time) const override { return obstacles_->getObstacles().size(); };
 
       vector_t getValue(scalar_t time, const vector_t &state, const PreComputation &preComp) const override
       {
+        auto pos_array_ = obstacles_->getObstacles();
+
         vector_t constraint(pos_array_.size());
 
         for (size_t i = 0; i < pos_array_.size(); ++i)
@@ -40,6 +40,7 @@ namespace ocs2
       {
         VectorFunctionLinearApproximation linearApproximation;
 
+        auto pos_array_ = obstacles_->getObstacles();
         linearApproximation.f = getValue(time, state, preComp);
 
         matrix_t C(pos_array_.size(), state.size());
@@ -58,6 +59,7 @@ namespace ocs2
                                                                      const PreComputation &preComp) const override
       {
         VectorFunctionQuadraticApproximation quadraticApproximation;
+        auto pos_array_ = obstacles_->getObstacles();
 
         quadraticApproximation.f = getValue(time, state, preComp);
 
@@ -81,9 +83,9 @@ namespace ocs2
 
     private:
       ObjectCBFConstraint(const ObjectCBFConstraint &other) = default;
-      const std::vector<std::pair<scalar_t, scalar_t>> pos_array_;
       const scalar_array_t radius_array_;
       scalar_t alpha_;
+      std::shared_ptr<Obstacles> obstacles_;
     };
 
   } // namespace object_manipulation

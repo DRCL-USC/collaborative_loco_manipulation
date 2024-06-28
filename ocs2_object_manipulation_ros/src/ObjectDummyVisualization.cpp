@@ -3,6 +3,7 @@
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 #include <ocs2_core/misc/LoadData.h>
 #include <ocs2_core/misc/LoadStdVectorOfPair.h>
+#include <std_msgs/Bool.h>
 
 namespace ocs2
 {
@@ -32,8 +33,10 @@ namespace ocs2
       wrenchPublisher_.publish(wrench_markers);
 
       // Publish obstacles
-      visualization_msgs::MarkerArray obstacle_markers = obstacles(timeStamp);
-      obstaclesPublisher_.publish(obstacle_markers);
+      std_msgs::Bool msg;
+      msg.data = true;
+      obstaclesPublisher_.publish(msg);
+
 
       // Publish desired trajectory
       publishDesiredTrajectory(timeStamp, command.mpcTargetTrajectories_);
@@ -46,7 +49,7 @@ namespace ocs2
       stateOptimizedPublisher_ = nodeHandle.advertise<visualization_msgs::Marker>("/optimizedStateTrajectory", 1);
       objectPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/object_markers", 0);
       wrenchPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/wrench_markers", 0);
-      obstaclesPublisher_ = nodeHandle.advertise<visualization_msgs::MarkerArray>("/obstacle_markers", 0);
+      obstaclesPublisher_ = nodeHandle.advertise<std_msgs::Bool>("/obstacle_visualizer", 0);
     }
 
     /******************************************************************************************************/
@@ -241,84 +244,6 @@ namespace ocs2
 
         markerArray.markers.push_back(marker);
       }
-
-      return markerArray;
-    }
-
-    visualization_msgs::MarkerArray ObjectDummyVisualization::obstacles(ros::Time timeStamp)
-    {
-
-      visualization_msgs::MarkerArray markerArray;
-
-      // Marker visualization
-      visualization_msgs::Marker marker;
-      marker.header.frame_id = frameId_;
-      marker.header.stamp = timeStamp;
-      marker.ns = "obstacles";
-      marker.id = 0;
-      marker.type = visualization_msgs::Marker::CUBE_LIST;
-      marker.action = visualization_msgs::Marker::ADD;
-
-      marker.scale.x = 0.5;
-      marker.scale.y = 0.5;
-      marker.scale.z = 0.5;
-
-      marker.color.a = 1.0; // Don't forget to set the alpha!
-      marker.color.r = 0.0;
-      marker.color.g = 0.0;
-      marker.color.b = 1.0;
-
-      marker.pose.orientation.x = 0.0;
-      marker.pose.orientation.y = 0.0;
-      marker.pose.orientation.z = 0.0;
-      marker.pose.orientation.w = 1.0;
-
-      // Define a list of points
-      for (int i = 0; i < obstacles_pose.size(); i++)
-      {
-        geometry_msgs::Point p;
-        p.x = obstacles_pose[i].first;
-        p.y = obstacles_pose[i].second;
-        p.z = 0.25;
-        marker.points.push_back(p);
-      }
-
-      markerArray.markers.push_back(marker);
-
-      //Marker visualization
-      visualization_msgs::Marker marker2;
-      marker2.header.frame_id = frameId_;
-      marker2.header.stamp = timeStamp;
-      marker2.ns = "obstacles";
-      marker2.id = 1;
-      marker2.type = visualization_msgs::Marker::SPHERE_LIST;
-      marker2.action = visualization_msgs::Marker::ADD;
-
-      marker2.scale.x = 1;
-      marker2.scale.y = 1;
-      marker2.scale.z = 1;
-
-      marker2.color.a = 0.7; // Don't forget to set the alpha!
-      marker2.color.r = 0.0;
-      marker2.color.g = 1.0;
-      marker2.color.b = 0.0;
-
-      marker2.pose.orientation.x = 0.0;
-      marker2.pose.orientation.y = 0.0;
-      marker2.pose.orientation.z = 0.0;
-      marker2.pose.orientation.w = 1.0;
-
-      // Define a list of points
-      for (int i = 0; i < obstacles_pose.size(); i++)
-      {
-        geometry_msgs::Point p;
-        p.x = obstacles_pose[i].first;
-        p.y = obstacles_pose[i].second;
-        p.z = 0.25;
-        marker2.points.push_back(p);
-      }
-
-      // markerArray.markers.push_back(marker2);
 
       return markerArray;
     }

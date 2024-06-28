@@ -13,6 +13,7 @@
 #include "ocs2_object_manipulation/ObjectParameters.h"
 #include "ocs2_object_manipulation/definitions.h"
 #include "ocs2_object_manipulation/dynamics/ObjectSystemDynamics.h"
+#include <ocs2_object_manipulation/CBFs/ObjectCBFConstraint.h>
 
 namespace ocs2 {
 namespace object_manipulation {
@@ -56,6 +57,7 @@ class ObjectInterface final : public RobotInterface {
   object_manipulation::ObjectManipulationParameters& getProblemSettings() { return problem_settings_; }
 
   std::shared_ptr<AdaptiveControl> getAdaptiveControlPtr() { return adaptiveControlPtr_; }
+  std::shared_ptr<Obstacles> getObstaclesPtr() { return obstaclesPtr_; }
 
  private:
   ddp::Settings ddpSettings_;
@@ -72,6 +74,7 @@ class ObjectInterface final : public RobotInterface {
   
   ObjectManipulationParameters problem_settings_;
   std::shared_ptr<AdaptiveControl> adaptiveControlPtr_;
+  std::shared_ptr<Obstacles> obstaclesPtr_;
 };
 
 }  // namespace object_manipulation

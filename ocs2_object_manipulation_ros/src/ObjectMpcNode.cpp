@@ -3,11 +3,11 @@
 #include <ros/init.h>
 #include <ros/package.h>
 
-#include <ocs2_object_manipulation/ObjectInterface.h>
 #include <ocs2_ddp/GaussNewtonDDP_MPC.h>
 #include <ocs2_ros_interfaces/mpc/MPC_ROS_Interface.h>
 #include <ocs2_ros_interfaces/synchronized_module/RosReferenceManager.h>
 #include <ocs2_ros_interfaces/synchronized_module/SolverObserverRosCallbacks.h>
+#include <ocs2_object_manipulation_ros/ObstacleVisualization.h>
 
 int main(int argc, char** argv) {
   const std::string robotName = "object";
@@ -42,6 +42,13 @@ int main(int argc, char** argv) {
   // add adaptive control
   auto adaptivecontrolPtr = objectInterface.getAdaptiveControlPtr();
   mpc.getSolverPtr()->addSynchronizedModule(adaptivecontrolPtr);
+
+  //add obstacles
+  auto obstaclesPtr = objectInterface.getObstaclesPtr();
+  mpc.getSolverPtr()->addSynchronizedModule(obstaclesPtr);
+
+  // add visualization
+  ObstacleVisualization obstacleVisualization(nodeHandle, obstaclesPtr);
 
   // Launch MPC ROS node
   ocs2::MPC_ROS_Interface mpcNode(mpc, robotName);
