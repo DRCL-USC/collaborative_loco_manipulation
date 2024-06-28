@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   mrt.launchNodes(nodeHandle);
 
   // Visualization
-  auto objectDummyVisualization = std::make_shared<ocs2::object_manipulation::ObjectDummyVisualization>(nodeHandle, objectInterface.getProblemSettings());
+  auto objectDummyVisualization = std::make_shared<ocs2::object_manipulation::ObjectDummyVisualization>(nodeHandle, taskFile);
 
   // initial state
   ocs2::SystemObservation initObservation;
