@@ -38,6 +38,8 @@ int main(int argc, char **argv)
     pub_twist[1] = nh.advertise<geometry_msgs::Twist>("/robot_2/cmd_vel", 1);
 
     bool start = false;
+    TargetTrajectories targetTrajectories;
+    targetTrajectories.stateTrajectory.push_back(vector_t().setZero(6));
     scalar_array_t agents_init_yaw_ = {0.0, 0.0};
     const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/mpc/task.info";
     loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
@@ -45,10 +47,18 @@ int main(int argc, char **argv)
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
+        std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
+
+        scalar_t distance = sqrt(pow(observationPtr_->state(0) - targetTrajectories.stateTrajectory.back()[0], 2) +
+                                 pow(observationPtr_->state(1) - targetTrajectories.stateTrajectory.back()[1], 2));
+
+        if (distance < 0.4) // magic number
+        {
+            start = false;
+        }
+
         if (start)
         {
-            std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
-
             for (int i = 0; i < AGENT_COUNT; i++)
             {
 
@@ -72,7 +82,7 @@ int main(int argc, char **argv)
                 wrench_msg[i].torque.z = 0;
                 pub_wrench[i].publish(wrench_msg[i]);
 
-                pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length
+                pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length - magic number
                 pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
                 pose_msg[i].position.z = 0.0;
                 pub_pose[i].publish(pose_msg[i]);
@@ -92,8 +102,13 @@ int main(int argc, char **argv)
 
     ros::Subscriber sub = nh.subscribe<ocs2_msgs::mpc_observation>("/object_mpc_observation", 1, WrenchCallback);
 
-    ros::Subscriber start_sub = nh.subscribe<ocs2_msgs::mpc_target_trajectories>("object_mpc_target", 1, [&](const ocs2_msgs::mpc_target_trajectories::ConstPtr &msg)
-                                                                                 { start = true; });
+    auto targetCallback = [&](const ocs2_msgs::mpc_target_trajectories::ConstPtr &msg)
+    {
+        start = true;
+        targetTrajectories = ros_msg_conversions::readTargetTrajectoriesMsg(*msg);
+    };
+
+    ros::Subscriber start_sub = nh.subscribe<ocs2_msgs::mpc_target_trajectories>("object_mpc_target", 1, targetCallback);
 
     // Spin
     ros::spin();
