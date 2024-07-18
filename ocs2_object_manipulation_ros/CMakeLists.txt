@@ -13,6 +13,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   ocs2_object_manipulation
   ocs2_robotic_assets
   gazebo_dev
+  rosbag
 )
 
 find_package(catkin REQUIRED COMPONENTS
@@ -51,16 +52,6 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
-
-# # Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/StateEstimation.cpp
-# )
-# target_link_libraries(${PROJECT_NAME}
-#         ${catkin_LIBRARIES}
-#         )
-
-# target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
 
 add_library(ApplyBodyForce SHARED plugin/apply_wrench.cc)
 target_link_libraries(ApplyBodyForce ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
@@ -119,6 +110,17 @@ add_dependencies(object_manipulation_target
   ${catkin_EXPORTED_TARGETS}
 )
 target_link_libraries(object_manipulation_target
+  ${catkin_LIBRARIES}
+)
+
+# Bagfile node
+add_executable(bagfile_recorder
+  src/bagfile_recorder.cpp
+)
+add_dependencies(bagfile_recorder
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(bagfile_recorder
   ${catkin_LIBRARIES}
 )
 

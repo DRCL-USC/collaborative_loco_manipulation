@@ -3,6 +3,7 @@
   <arg name="rviz" default="true" />
   <arg name="multiplot" default="true" />
   <arg name="task_name" default="mpc" />
+  <arg name="record_data" default="false" />
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name"
@@ -17,6 +18,11 @@
   <group if="$(arg multiplot)">
     <include file="$(find ocs2_object_manipulation_ros)/launch/multiplot.launch" />
   </group>
+
+  <group if="$(arg record_data)">
+    <node pkg="ocs2_object_manipulation_ros" type="bagfile_recorder" name="bagfile_recorder"
+    output="screen" launch-prefix="" />
+  </group>  
 
   <node pkg="ocs2_object_manipulation_ros" type="object_mpc" name="object_mpc"
     output="screen" args="$(arg task_name)" launch-prefix="" />

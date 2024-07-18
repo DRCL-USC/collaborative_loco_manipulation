@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     pub_twist[0] = nh.advertise<geometry_msgs::Twist>("/robot_1/cmd_vel", 1);
     pub_twist[1] = nh.advertise<geometry_msgs::Twist>("/robot_2/cmd_vel", 1);
 
+    bool start = false;
     scalar_array_t agents_init_yaw_ = {0.0, 0.0};
     const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/mpc/task.info";
     loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
@@ -44,49 +45,55 @@ int main(int argc, char **argv)
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
-        std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
-
-        for (int i = 0; i < AGENT_COUNT; i++)
+        if (start)
         {
+            std::unique_ptr<ocs2::SystemObservation> observationPtr_(new ocs2::SystemObservation(ocs2::ros_msg_conversions::readObservationMsg(*msg)));
 
-            Eigen::Matrix<scalar_t, 3, 1> euler;
-            euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
-            Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
+            for (int i = 0; i < AGENT_COUNT; i++)
+            {
 
-            Eigen::Matrix<scalar_t, 3, 1> obj_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(0),
-                                                                         observationPtr_->state(1), 0.0)
-                                                                            .finished();
+                Eigen::Matrix<scalar_t, 3, 1> euler;
+                euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
+                Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-            Eigen::Matrix<scalar_t, 3, 1> obj_vel_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(3),
-                                                                         observationPtr_->state(4), 0.0)
-                                                                            .finished();                                                                
+                Eigen::Matrix<scalar_t, 3, 1> obj_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(0),
+                                                                                           observationPtr_->state(1), 0.0)
+                                                                                              .finished();
 
-            wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
-            wrench_msg[i].force.y = 0;
-            wrench_msg[i].force.z = 0;
-            wrench_msg[i].torque.x = 0;
-            wrench_msg[i].torque.y = 0;
-            wrench_msg[i].torque.z = 0;
-            pub_wrench[i].publish(wrench_msg[i]);
+                Eigen::Matrix<scalar_t, 3, 1> obj_vel_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(3),
+                                                                                          observationPtr_->state(4), 0.0)
+                                                                                             .finished();
 
-            pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length 
-            pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
-            pose_msg[i].position.z = 0.0;
-            pub_pose[i].publish(pose_msg[i]);
+                wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
+                wrench_msg[i].force.y = 0;
+                wrench_msg[i].force.z = 0;
+                wrench_msg[i].torque.x = 0;
+                wrench_msg[i].torque.y = 0;
+                wrench_msg[i].torque.z = 0;
+                pub_wrench[i].publish(wrench_msg[i]);
 
-            twist_msg[i].linear.x = obj_vel_robot_frame(0);
-            twist_msg[i].linear.y = obj_vel_robot_frame(1);
-            twist_msg[i].linear.z = 0;
-            twist_msg[i].angular.x = 0;
-            twist_msg[i].angular.y = 0;
-            twist_msg[i].angular.z = observationPtr_->state(5);
-            pub_twist[i].publish(twist_msg[i]);
+                pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length
+                pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
+                pose_msg[i].position.z = 0.0;
+                pub_pose[i].publish(pose_msg[i]);
+
+                twist_msg[i].linear.x = obj_vel_robot_frame(0);
+                twist_msg[i].linear.y = obj_vel_robot_frame(1);
+                twist_msg[i].linear.z = 0;
+                twist_msg[i].angular.x = 0;
+                twist_msg[i].angular.y = 0;
+                twist_msg[i].angular.z = observationPtr_->state(5);
+                pub_twist[i].publish(twist_msg[i]);
+            }
+
+            ros::Duration(0.01).sleep();
         }
-
-        ros::Duration(0.01).sleep();
     };
 
     ros::Subscriber sub = nh.subscribe<ocs2_msgs::mpc_observation>("/object_mpc_observation", 1, WrenchCallback);
+
+    ros::Subscriber start_sub = nh.subscribe<ocs2_msgs::mpc_target_trajectories>("object_mpc_target", 1, [&](const ocs2_msgs::mpc_target_trajectories::ConstPtr &msg)
+                                                                                 { start = true; });
 
     // Spin
     ros::spin();

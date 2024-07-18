@@ -22,5 +22,6 @@
   <depend>robot_state_publisher</depend>
   <depend>ocs2_robotic_assets</depend>
   <depend>gazebo_dev</depend>
+  <depend>rosbag</depend>
   
 </package>

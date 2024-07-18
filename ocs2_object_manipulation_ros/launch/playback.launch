@@ -1,0 +1,17 @@
+<launch>
+    <arg name="rvizconfig" default="$(find ocs2_object_manipulation_ros)/rviz/object.rviz" />
+
+
+    <param name="/alien1/robot_description"
+        command="$(find xacro)/xacro $(find unitree_description)/xacro/robot.xacro 
+           ns:=alien1 robot_type:=aliengo" />
+
+    <param name="/alien2/robot_description"
+        command="$(find xacro)/xacro 
+        $(find unitree_description)/xacro/robot.xacro ns:=alien2 robot_type:=aliengo" />
+
+
+    <node pkg="rviz" type="rviz" name="Object" args="-d $(arg rvizconfig)" output="screen" />
+
+</launch>
+	
