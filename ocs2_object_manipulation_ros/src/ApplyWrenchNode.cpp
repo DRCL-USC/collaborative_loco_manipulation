@@ -66,9 +66,9 @@ int main(int argc, char **argv)
                 euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
                 Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-                Eigen::Matrix<scalar_t, 3, 1> obj_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(0),
-                                                                                           observationPtr_->state(1), 0.0)
-                                                                                              .finished();
+                Eigen::Matrix<scalar_t, 3, 1> obj_pose_world_frame = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25,
+                                                                               lpf.process(observationPtr_->input(2 + i)), 0.0)
+                                                                                  .finished(); // 0.25 is the radius length - magic number
 
                 Eigen::Matrix<scalar_t, 3, 1> obj_vel_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(3),
                                                                                           observationPtr_->state(4), 0.0)
@@ -82,8 +82,8 @@ int main(int argc, char **argv)
                 wrench_msg[i].torque.z = 0;
                 pub_wrench[i].publish(wrench_msg[i]);
 
-                pose_msg[i].position.x = obj_pose_robot_frame(0) - 0.25; // 0.25 is the radius length - magic number
-                pose_msg[i].position.y = obj_pose_robot_frame(1) + lpf.process(observationPtr_->input(2 + i));
+                pose_msg[i].position.x = observationPtr_->state(0) + obj_pose_world_frame(0); 
+                pose_msg[i].position.y = observationPtr_->state(1) + obj_pose_world_frame(1);
                 pose_msg[i].position.z = 0.0;
                 pub_pose[i].publish(pose_msg[i]);
 
