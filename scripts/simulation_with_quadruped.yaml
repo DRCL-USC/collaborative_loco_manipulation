@@ -1,0 +1,29 @@
+session_name: Controller
+windows:
+  - layout: tiled
+    panes:
+      - shell_command:
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true multiplot:=true record_data:=true
+      - shell_command:
+        - sleep 2
+        - roslaunch unitree_description spawn_robot.launch robot_type:=aliengo ns:=alien1 x_pos:=-0.73 y_pos:=0.0 yaw_angle:=0.0 
+      - shell_command:
+        - sleep 3
+        - roslaunch unitree_description spawn_robot.launch robot_type:=aliengo ns:=alien2 x_pos:=0.0 y_pos:=-0.73 yaw_angle:=1.57
+      - shell_command:
+        - sleep 6
+        - rosrun quadruped_control aliengo_ctrl __ns:=alien1
+      - shell_command:
+        - sleep 6
+        - rosrun quadruped_control aliengo_ctrl __ns:=alien2 
+      - shell_command:
+        - sleep 1
+        - rosrun ocs2_object_manipulation_ros apply_wrench_node /robot_1/wrench:=/alien1/wrench /robot_2/wrench:=/alien2/wrench 
+            /robot_1/cmd_vel:=/alien1/cmd_vel /robot_2/cmd_vel:=/alien2/cmd_vel /robot_1/contactPoint:=/alien1/contactPoint /robot_2/contactPoint:=/alien2/contactPoint
+      - shell_command:
+        - sleep 10
+        - rosrun ocs2_object_manipulation_ros object_manipulation_target_predefined
+    shell_command_before:
+      - cd ~/Projects/manipulation_ws/
+      - source devel/setup.bash 
+    window_name: Controller
