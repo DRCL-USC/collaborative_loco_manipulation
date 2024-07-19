@@ -22,7 +22,7 @@
         <model name="object">
             <link name="object">
                 <inertial>
-                    <mass>6</mass>
+                    <mass>8</mass>
                     <inertia>
                         <ixx>0.25</ixx>
                         <ixy>0.0</ixy>
@@ -41,8 +41,8 @@
                     <surface>
                         <friction>
                             <ode>
-                                <mu>0.2</mu>
-                                <mu2>0.2</mu2>
+                                <mu>0.4</mu>
+                                <mu2>0.4</mu2>
                             </ode>
                         </friction>
                         <contact>
