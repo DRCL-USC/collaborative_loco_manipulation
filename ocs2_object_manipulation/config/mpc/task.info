@@ -163,7 +163,7 @@ Q
 ; control weight matrix
 R
 {
-  scaling 1e-2
+  scaling 1e-1
   (0,0)  1.0
   (1,1)  1.0
   (2,2)  1.0

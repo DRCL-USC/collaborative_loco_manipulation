@@ -109,6 +109,17 @@ target_link_libraries(object_manipulation_target
   ${catkin_LIBRARIES}
 )
 
+# Target Pose Predefined node
+add_executable(object_manipulation_target_predefined
+  src/TargetPosePredefined.cpp
+)
+add_dependencies(object_manipulation_target_predefined
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(object_manipulation_target_predefined
+  ${catkin_LIBRARIES}
+)
+
 # Bagfile node
 add_executable(bagfile_recorder
   src/bagfile_recorder.cpp
