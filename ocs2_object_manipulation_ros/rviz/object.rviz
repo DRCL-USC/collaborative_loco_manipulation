@@ -197,8 +197,8 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: RobotModel
-      Robot Description: alien1/robot_description
-      TF Prefix: alien1
+      Robot Description: robot_1/robot_description
+      TF Prefix: robot_1
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -308,8 +308,8 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: RobotModel
-      Robot Description: alien2/robot_description
-      TF Prefix: alien2
+      Robot Description: robot_2/robot_description
+      TF Prefix: robot_2
       Update Interval: 0
       Value: true
       Visual Enabled: true
