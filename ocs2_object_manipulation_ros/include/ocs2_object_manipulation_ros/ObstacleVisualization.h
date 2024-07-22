@@ -53,7 +53,7 @@ public:
             geometry_msgs::Point p;
             p.x = obstacles_pose[i].first;
             p.y = obstacles_pose[i].second;
-            p.z = 0.25;
+            p.z = 0.25; // magic number
             marker.points.push_back(p);
         }
 
@@ -88,7 +88,7 @@ public:
             geometry_msgs::Point p;
             p.x = obstacles_pose[i].first;
             p.y = obstacles_pose[i].second;
-            p.z = 0.25;
+            p.z = 0.25; //magic number
             marker2.points.push_back(p);
         }
 

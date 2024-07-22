@@ -120,7 +120,7 @@ namespace ocs2
       scalar_t alpha_;
       std::shared_ptr<Obstacles> obstacles_;
       scalar_array_t init_yaw_;
-      scalar_t offset_x = -0.25 - 0.35;
+      scalar_t offset_x = -0.25 - 0.35; // magic number
     };
 
   } // namespace object_manipulation
