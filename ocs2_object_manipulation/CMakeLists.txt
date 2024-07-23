@@ -103,26 +103,3 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(DIRECTORY config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-#############
-## Testing ##
-#############
-## Info ==============================
-## to run tests, cd package folder and run
-## $ catkin build -DCMAKE_BUILD_TYPE=RelWithDebInfo --this
-## $ catkin run_tests --no-deps --this
-## to see the summary of unit test results run
-## $ catkin_test_results ../../../build/ocs2_object
-
-catkin_add_gtest(test_object
-  test/testObject.cpp
-)
-target_include_directories(test_object PRIVATE
-  ${PROJECT_BINARY_DIR}/include
-)
-target_link_libraries(test_object
-  gtest_main
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  ${Boost_LIBRARIES}
-)

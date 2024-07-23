@@ -19,7 +19,7 @@ windows:
         - roslaunch unitree_description spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
       - shell_command:
         - sleep 6
-        - rosrun quadruped_control aliengo_ctrl __ns:=$ns
+        - rosrun quadruped_control quad_control $robot_type __ns:=$ns
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_1
@@ -36,7 +36,7 @@ windows:
         - roslaunch unitree_description spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
       - shell_command:
         - sleep 6
-        - rosrun quadruped_control aliengo_ctrl __ns:=$ns
+        - rosrun quadruped_control quad_control $robot_type __ns:=$ns
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2

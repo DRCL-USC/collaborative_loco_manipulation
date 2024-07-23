@@ -53,9 +53,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(ApplyBodyForce SHARED plugin/apply_wrench.cc)
-target_link_libraries(ApplyBodyForce ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
 # Mpc node
 add_executable(object_mpc
   src/ObjectMpcNode.cpp
@@ -76,18 +73,6 @@ add_dependencies(object_mrt
   ${catkin_EXPORTED_TARGETS}
 )
 target_link_libraries(object_mrt
-  ${catkin_LIBRARIES}
-)
-
-# Dummy node
-add_executable(object_dummy_test
-  src/DummyObjectNode.cpp
-  src/ObjectDummyVisualization.cpp
-)
-add_dependencies(object_dummy_test
-  ${catkin_EXPORTED_TARGETS}
-)
-target_link_libraries(object_dummy_test
   ${catkin_LIBRARIES}
 )
 
@@ -147,9 +132,6 @@ endif(cmake_clang_tools_FOUND)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
-install(TARGETS object_mpc object_dummy_test
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY launch rviz
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

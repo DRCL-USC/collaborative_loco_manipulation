@@ -140,13 +140,13 @@ namespace ocs2
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 70;
+        boxConstraint.upperBound = 70; // magic number
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
 
-        boxConstraint.index = i + 2;
-        boxConstraint.lowerBound = -0.25;
-        boxConstraint.upperBound = 0.25;
+        boxConstraint.index = i + AGENT_COUNT;
+        boxConstraint.lowerBound = -0.25; // magic number
+        boxConstraint.upperBound = 0.25; // magic number
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
         inputLimits.push_back(boxConstraint);
       }
