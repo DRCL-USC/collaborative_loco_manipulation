@@ -41,8 +41,10 @@ int main(int argc, char **argv)
     TargetTrajectories targetTrajectories;
     targetTrajectories.stateTrajectory.push_back(vector_t().setZero(6));
     scalar_array_t agents_init_yaw_ = {0.0, 0.0};
+    scalar_t targetError;
     const std::string taskFile = ros::package::getPath("ocs2_object_manipulation") + "/config/mpc/task.info";
     loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
+    loadData::loadCppDataType(taskFile, "targetDisplacementError", targetError);
     LowPassFilter<scalar_t> lpf(0.1);
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
@@ -52,7 +54,7 @@ int main(int argc, char **argv)
         scalar_t distance = sqrt(pow(observationPtr_->state(0) - targetTrajectories.stateTrajectory.back()[0], 2) +
                                  pow(observationPtr_->state(1) - targetTrajectories.stateTrajectory.back()[1], 2));
 
-        if (distance < 0.4) // magic number
+        if (distance < targetError) 
         {
             start = false;
         }

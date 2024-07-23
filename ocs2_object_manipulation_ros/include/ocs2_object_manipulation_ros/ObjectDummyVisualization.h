@@ -43,6 +43,7 @@ namespace ocs2
       ros::Publisher obstaclesPublisher_;
       const std::string taskFile_;
       scalar_array_t init_yaw;
+      scalar_t F_max;
       std::vector<std::pair<scalar_t, scalar_t>> obstacles_pose;
     };
 

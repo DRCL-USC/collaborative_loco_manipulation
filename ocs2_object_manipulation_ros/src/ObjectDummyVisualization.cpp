@@ -13,6 +13,7 @@ namespace ocs2
     ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile): taskFile_(taskfile) { 
           loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
           loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
+          loadData::loadCppDataType(taskFile_, "input_bounds.F_max", F_max);
           launchVisualizerNode(nodeHandle); }
           
     void ObjectDummyVisualization::update(const SystemObservation &observation, const PrimalSolution &policy, const CommandData &command)
@@ -217,7 +218,7 @@ namespace ocs2
         euler << observation.state(2) + init_yaw[i], 0.0, 0.0;
         Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-        auto scaled_input = observation.input(i) / 80; // magic number
+        auto scaled_input = observation.input(i) / F_max; 
 
         Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
                                                                      observation.input(AGENT_COUNT + i), 0.0)
