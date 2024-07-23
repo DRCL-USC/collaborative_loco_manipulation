@@ -8,6 +8,9 @@ windows:
       - shell_command:
         - sleep 1
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
+      - shell_command:
+        - sleep 10
+        - rosrun ocs2_object_manipulation_ros object_manipulation_target_predefined  
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
 
