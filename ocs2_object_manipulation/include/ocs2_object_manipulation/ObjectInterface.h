@@ -39,8 +39,6 @@ class ObjectInterface final : public RobotInterface {
 
   const vector_t& getInitialState() { return initialState_; }
 
-  const vector_t& getInitialTarget() { return xFinal_; }
-
   ddp::Settings& ddpSettings() { return ddpSettings_; }
 
   mpc::Settings& mpcSettings() { return mpcSettings_; }
@@ -70,7 +68,6 @@ class ObjectInterface final : public RobotInterface {
   std::unique_ptr<Initializer> objectInitializerPtr_;
 
   vector_t initialState_{STATE_DIM};
-  vector_t xFinal_{STATE_DIM};
   
   ObjectManipulationParameters problem_settings_;
   std::shared_ptr<AdaptiveControl> adaptiveControlPtr_;

@@ -48,11 +48,9 @@ namespace ocs2
 
       // Default initial condition
       loadData::loadEigenMatrix(taskFile, "initialState", initialState_);
-      loadData::loadEigenMatrix(taskFile, "x_final", xFinal_);
       if (verbose)
       {
         std::cerr << "x_init:   " << initialState_.transpose() << "\n";
-        std::cerr << "x_final:  " << xFinal_.transpose() << "\n";
       }
 
       // DDP-MPC settings
@@ -129,6 +127,11 @@ namespace ocs2
       //                                                                                             std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
 
       // Box constraints
+      std::vector<std::pair<scalar_t, scalar_t>> d_range;
+      loadData::loadStdVectorOfPair(taskFile, "input_bounds.d_range", d_range, verbose);
+      scalar_t F_max;
+      loadData::loadCppDataType(taskFile, "input_bounds.F_max", F_max);
+
       StateInputSoftBoxConstraint::BoxConstraint boxConstraint;
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> stateLimits;
@@ -136,17 +139,17 @@ namespace ocs2
 
       std::vector<StateInputSoftBoxConstraint::BoxConstraint> inputLimits;
       inputLimits.reserve(INPUT_DIM);
-      for (int i = 0; i < 2; ++i)
+      for (int i = 0; i < AGENT_COUNT; ++i)
       {
         boxConstraint.index = i;
         boxConstraint.lowerBound = 0;
-        boxConstraint.upperBound = 70; // magic number
+        boxConstraint.upperBound = F_max;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 0.01)));
         inputLimits.push_back(boxConstraint);
 
         boxConstraint.index = i + AGENT_COUNT;
-        boxConstraint.lowerBound = -0.25; // magic number
-        boxConstraint.upperBound = 0.25; // magic number
+        boxConstraint.lowerBound = d_range[i].first;
+        boxConstraint.upperBound = d_range[i].second;
         boxConstraint.penaltyPtr.reset(new RelaxedBarrierPenalty(RelaxedBarrierPenalty::Config(0.1, 1e-3)));
         inputLimits.push_back(boxConstraint);
       }
