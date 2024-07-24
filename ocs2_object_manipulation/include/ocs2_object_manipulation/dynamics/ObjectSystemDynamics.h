@@ -61,7 +61,7 @@ namespace ocs2
 
         // RHS
         Eigen::Matrix<ad_scalar_t, 3, 1> rhs(total_forces_w(0) - parameters(0), total_forces_w(1) - parameters(1),
-                                             -input(0) * input(2) - input(1) * input(3));
+                                             -input(0) * input(2) - input(1) * input(3) - parameters(3));
 
         // dxdt
         ad_vector_t stateDerivative(STATE_DIM);
