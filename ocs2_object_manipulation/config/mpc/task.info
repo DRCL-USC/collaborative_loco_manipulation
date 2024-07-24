@@ -45,7 +45,7 @@ adaptive_control
     (3,0) 1.0    
   }
 
-  Kd 3
+  Kd 5
   lambda 1
 
   alpha 0.1 ; low_pass filter
