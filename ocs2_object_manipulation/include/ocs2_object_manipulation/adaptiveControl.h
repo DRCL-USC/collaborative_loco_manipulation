@@ -50,7 +50,7 @@ namespace ocs2
 
                 Y = Y_H + Y_C;
 
-                return -(Kd * s + Y * a_hat)*0;
+                return -Kd * s + Y * a_hat;
             };
 
             void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t &currentState,
