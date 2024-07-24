@@ -1,7 +1,7 @@
 targetDisplacementVelocity          0.5;
 targetRotationVelocity              0.8;
 
-targetDisplacementError             0.4;
+targetDisplacementError             0.2;
 
 ; object parameters
 object_parameters
@@ -43,7 +43,7 @@ adaptive_control
     (3,0) 1.0    
   }
 
-  Kd 3
+  Kd 5
   lambda 1
 
   alpha 0.1 ; low_pass filter
