@@ -1,13 +1,49 @@
-session_name: Controller
+session_name: ObjectManipulation
 windows:
-  - layout: tiled
+  - window_name: Planner
+    layout: tiled
     panes:
       - shell_command:
-        - roslaunch ocs2_object_manipulation_ros gazebo.launch
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true multiplot:=false record_data:=true
+      - shell_command:
+        - sleep 1
+        - rosrun ocs2_object_manipulation_ros apply_wrench_node
+      - shell_command:
+        - sleep 10
+        - rosrun ocs2_object_manipulation_ros object_manipulation_target_predefined  
+    shell_command_before:
+      - source ~/Projects/manipulation_ws/devel/setup.bash 
+
+  - window_name: Robot1
+    layout: tiled
+    panes:
+      - shell_command:
+        - sleep 2
+        - roslaunch unitree_description spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
       - shell_command:
         - sleep 6
-        - rosrun ocs2_object_manipulation_ros apply_wrench_node
+        - rosrun quadruped_control quad_control $robot_type __ns:=$ns
     shell_command_before:
-      - cd ~/Projects/manipulation_ws/
-      - source devel/setup.bash 
-    window_name: Controller
+      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - export ns=robot_1
+      - export robot_type=aliengo
+      - export x_pos=-0.73
+      - export y_pos=0.0
+      - export yaw_angle=0.0
+
+  - window_name: Robot2
+    layout: tiled
+    panes:
+      - shell_command:
+        - sleep 3
+        - roslaunch unitree_description spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
+      - shell_command:
+        - sleep 6
+        - rosrun quadruped_control quad_control $robot_type __ns:=$ns
+    shell_command_before:
+      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - export ns=robot_2
+      - export robot_type=aliengo
+      - export x_pos=0.0
+      - export y_pos=-0.73
+      - export yaw_angle=1.57
