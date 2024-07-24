@@ -1,11 +1,15 @@
 session_name: ObjectManipulation
+session_name: ObjectManipulation
 windows:
+  - window_name: Planner
+    layout: tiled
   - window_name: Planner
     layout: tiled
     panes:
       - shell_command:
-        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=true rviz:=true multiplot:=false record_data:=false
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true multiplot:=false record_data:=true
       - shell_command:
+        - sleep 1
         - sleep 1
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
       - shell_command:
@@ -27,9 +31,9 @@ windows:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_1
       - export robot_type=aliengo
-      - export x_pos=-0.5
-      - export y_pos=-0.5
-      - export yaw_angle=0.78
+      - export x_pos=-0.73
+      - export y_pos=0.0
+      - export yaw_angle=0.0
 
   - window_name: Robot2
     layout: tiled
@@ -42,59 +46,8 @@ windows:
         - rosrun quadruped_control quad_control $robot_type __ns:=$ns
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
-
-  - window_name: Robot1
-    layout: tiled
-    panes:
-      - shell_command:
-        - sleep 2
-        - roslaunch quadruped_sim spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
-      - shell_command:
-        - sleep 6
-        - rosrun quadruped_sim quad_sim_control $robot_type __ns:=$ns
-      - shell_command:
-        - sleep 8
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"PDSTAND\"'"
-      - shell_command:
-        - sleep 10
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"QPSTAND\"'"  
-      - shell_command:
-        - sleep 11
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"  
-
-    shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
-      - export ns=robot_1
-      - export robot_type=aliengo
-      - export x_pos=-0.5
-      - export y_pos=-0.5
-      - export yaw_angle=0.78
-
-  - window_name: Robot2
-    layout: tiled
-    panes:
-      - shell_command:
-        - sleep 3
-        - roslaunch quadruped_sim spawn_robot.launch robot_type:=$robot_type ns:=$ns x_pos:=$x_pos y_pos:=$y_pos yaw_angle:=$yaw_angle 
-      - shell_command:
-        - sleep 6
-        - rosrun quadruped_sim quad_sim_control $robot_type __ns:=$ns
-      - shell_command:
-        - sleep 8
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"PDSTAND\"'"
-      - shell_command:
-        - sleep 10
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"QPSTAND\"'"  
-      - shell_command:
-        - sleep 11
-        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"    
-    shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2
       - export robot_type=aliengo
-      - export x_pos=0.5
-      - export y_pos=-0.5
-      - export yaw_angle=2.35
-      - export x_pos=0.5
-      - export y_pos=-0.5
-      - export yaw_angle=2.35
+      - export x_pos=0.0
+      - export y_pos=-0.73
+      - export yaw_angle=1.57
