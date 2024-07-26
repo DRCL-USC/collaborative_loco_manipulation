@@ -4,7 +4,7 @@ windows:
     layout: tiled
     panes:
       - shell_command:
-        - roslaunch ocs2_object_manipulation_ros manipulation_stack.launch gui:=false rviz:=true multiplot:=false record_data:=false
+        - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=true rviz:=true multiplot:=false record_data:=false
       - shell_command:
         - sleep 1
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
@@ -27,9 +27,9 @@ windows:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_1
       - export robot_type=aliengo
-      - export x_pos=-0.73
-      - export y_pos=0.0
-      - export yaw_angle=0.0
+      - export x_pos=-0.5
+      - export y_pos=-0.5
+      - export yaw_angle=0.78
 
   - window_name: Robot2
     layout: tiled
@@ -92,6 +92,9 @@ windows:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2
       - export robot_type=aliengo
+      - export x_pos=0.5
+      - export y_pos=-0.5
+      - export yaw_angle=2.35
       - export x_pos=0.5
       - export y_pos=-0.5
       - export yaw_angle=2.35
