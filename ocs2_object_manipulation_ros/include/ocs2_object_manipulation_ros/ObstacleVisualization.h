@@ -15,12 +15,13 @@ public:
     {
         obstaclesPublisher_ = nh.advertise<visualization_msgs::MarkerArray>("/obstacle_markers", 0);
         obstaclesSubscriber_ = nh.subscribe("/obstacle_visualizer", 1, &ObstacleVisualization::callback, this);
+        obstacles_pose.reserve(2);
+        obstacles_pose.push_back(std::make_pair(3.5, 1.5));
+        obstacles_pose.push_back(std::make_pair(2, 2));
     }
 
     void callback(const std_msgs::Bool::ConstPtr &msg)
     {
-
-        auto obstacles_pose = obstaclesPtr_->getObstacles();
         visualization_msgs::MarkerArray markerArray;
         ros::Time timeStamp = ros::Time::now();
 
@@ -102,4 +103,5 @@ private:
     ros::Subscriber obstaclesSubscriber_;
     ros::Publisher obstaclesPublisher_;
     std::shared_ptr<ocs2::object_manipulation::Obstacles> obstaclesPtr_;
+    std::vector<std::pair<ocs2::scalar_t, ocs2::scalar_t>> obstacles_pose;
 };
