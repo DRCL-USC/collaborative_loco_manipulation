@@ -14,8 +14,8 @@ object_parameters
 
 yaw_init
 {
-  [0] 0
-  [1] 1.5708
+  [0] 0.78
+  [1] 2.3508
 }
 
 obstacles
@@ -141,7 +141,7 @@ initialState
 {
   (0,0) 0.0   ; x
   (1,0) 0.0   ; y
-  (2,0) 0.0   ; theta
+  (2,0) 0.78   ; theta
   (3,0) 0.0   ; x_dot
   (4,0) 0.0   ; y_dot
   (5,0) 0.0   ; theta_dot
