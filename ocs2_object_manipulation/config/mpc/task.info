@@ -22,14 +22,16 @@ obstacles
 {
   pose
   {
-    [0] "3.5, 1.5"
-    [1] "2, 2"
+    [0] "3, 2"
+    [1] "2, 3"
+    [2] "3, 4"
   }
 
   radius
   { 
     [0] 0.75
     [1] 0.75
+    [2] 0.75
   }
 }
 
@@ -43,7 +45,7 @@ adaptive_control
     (3,0) 1.0    
   }
 
-  Kd 5
+  Kd 3
   lambda 1
 
   alpha 0.1 ; low_pass filter
@@ -132,7 +134,7 @@ mpc
 cbf_penalty_config
 {
   mu                       0.8
-  delta                    0.5
+  delta                    0.8
   alpha                    1
 }
 
