@@ -41,8 +41,8 @@
                     <surface>
                         <friction>
                             <ode>
-                                <mu>0.3</mu>
-                                <mu2>0.3</mu2>
+                                <mu>0.4</mu>
+                                <mu2>0.4</mu2>
                             </ode>
                         </friction>
                         <contact>
@@ -68,7 +68,7 @@
 
         <model name="obstacle">
             <static>true</static>
-            <pose>3.5 1.5 0.25 0 0 0</pose>
+            <pose>3 2 0.25 0 0 0</pose>
             <link name="body">
                 <inertial>
                     <mass>5</mass>
@@ -115,7 +115,7 @@
 
         <model name="obstacle_2">
             <static>true</static>
-            <pose>2 2 0.25 0 0 0</pose>
+            <pose>2 3 0.25 0 0 0</pose>
             <link name="body">
                 <inertial>
                     <mass>5</mass>
