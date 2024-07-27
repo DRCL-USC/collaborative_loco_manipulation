@@ -20,7 +20,6 @@
         </include>
 
         <model name="object">
-            <pose>0.0 0.0 0.0 0 0 0.78</pose>
             <link name="object">
                 <inertial>
                     <mass>8</mass>
