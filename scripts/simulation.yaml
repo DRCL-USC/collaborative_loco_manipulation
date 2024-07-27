@@ -45,5 +45,5 @@ windows:
       - export ns=robot_2
       - export robot_type=aliengo
       - export x_pos=0.0
-      - export y_pos=-0.73
-      - export yaw_angle=1.57
+      - export y_pos=0.73
+      - export yaw_angle=-1.57
