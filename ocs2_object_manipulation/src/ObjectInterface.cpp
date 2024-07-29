@@ -115,7 +115,7 @@ namespace ocs2
       loadData::loadStdVector(taskFile, "obstacles.radius", obstacles_radius, verbose);
 
       // Obstacles
-      obstaclesPtr_.reset(new Obstacles(obstacles_pose));
+      obstaclesPtr_.reset(new Obstacles(obstacles_pose, false));
 
       problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
                                            std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstaclesPtr_, obstacles_radius, alpha),
