@@ -65,7 +65,7 @@ windows:
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2
-      - export robot_type=aliengo
+      - export robot_type=go1
       - export x_pos=0.0
       - export y_pos=-0.73
       - export yaw_angle=1.57
