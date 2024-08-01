@@ -136,17 +136,6 @@ cbf_penalty_config
   alpha                    1
 }
 
-; initial state
-initialState
-{
-  (0,0) 0.0   ; x
-  (1,0) 0.0   ; y
-  (2,0) 0.0   ; theta
-  (3,0) 0.0   ; x_dot
-  (4,0) 0.0   ; y_dot
-  (5,0) 0.0   ; theta_dot
-}
-
 ; state weight matrix
 Q
 {

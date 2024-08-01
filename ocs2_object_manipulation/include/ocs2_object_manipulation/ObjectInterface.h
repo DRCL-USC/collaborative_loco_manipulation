@@ -37,8 +37,6 @@ class ObjectInterface final : public RobotInterface {
    */
   ~ObjectInterface() override = default;
 
-  const vector_t& getInitialState() { return initialState_; }
-
   ddp::Settings& ddpSettings() { return ddpSettings_; }
 
   mpc::Settings& mpcSettings() { return mpcSettings_; }
@@ -66,8 +64,6 @@ class ObjectInterface final : public RobotInterface {
 
   std::unique_ptr<RolloutBase> rolloutPtr_;
   std::unique_ptr<Initializer> objectInitializerPtr_;
-
-  vector_t initialState_{STATE_DIM};
   
   ObjectManipulationParameters problem_settings_;
   std::shared_ptr<AdaptiveControl> adaptiveControlPtr_;

@@ -37,7 +37,19 @@ int main(int argc, char **argv)
   ocs2::object_manipulation::ObjectInterface objectInterface(taskFile, libFolder, false /*verbose*/);
 
   // State Estimation
-  ocs2::object_manipulation::StateEstimation stateEstimation;
+  std::shared_ptr<ocs2::object_manipulation::StateEstimationBase> stateEstimation;
+  if (programArgs.size() > 2 && std::string(programArgs[2]) == "Mocap")
+  {
+    stateEstimation.reset(new ocs2::object_manipulation::StateEstimationMocap("box"));
+    while (!stateEstimation->isInitialized())
+    {
+      ros::spinOnce();
+    }
+  }
+  else
+  {
+    stateEstimation.reset(new ocs2::object_manipulation::StateEstimationCheater());
+  }
 
   // MRT
   ocs2::MRT_ROS_Interface mrt(robotName);
@@ -49,14 +61,13 @@ int main(int argc, char **argv)
 
   // initial state
   ocs2::SystemObservation initObservation;
-  initObservation.state = objectInterface.getInitialState();
-  initObservation.state = stateEstimation.object_data.state;
+  initObservation.state = stateEstimation->_data.state;
   initObservation.input.setZero(ocs2::object_manipulation::INPUT_DIM);
   initObservation.time = 0.0;
 
   // initial command
-  const ocs2::TargetTrajectories initTargetTrajectories({0.0, initObservation.time}, {ocs2::vector_t::Zero(ocs2::object_manipulation::STATE_DIM), initObservation.state},
-                                                        {ocs2::vector_t::Zero(ocs2::object_manipulation::INPUT_DIM), initObservation.input});
+  const ocs2::TargetTrajectories initTargetTrajectories({0.0, initObservation.time}, {initObservation.state, initObservation.state},
+                                                        {initObservation.input, initObservation.input});
 
   // Run MRT loop
 
@@ -126,7 +137,7 @@ int main(int argc, char **argv)
     // Update MPC observation;
     currentObservation.time = nextObservation.time;
     currentObservation.input = nextObservation.input;
-    currentObservation.state = stateEstimation.object_data.state;
+    currentObservation.state = stateEstimation->_data.state;
 
     // Publish observation if at the next step we want a new policy
     if ((loopCounter + 1) % mpcUpdateRatio == 0)

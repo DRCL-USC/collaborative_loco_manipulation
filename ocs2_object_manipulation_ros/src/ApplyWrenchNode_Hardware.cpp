@@ -5,9 +5,6 @@
 #include <ocs2_msgs/mpc_observation.h>
 #include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
 #include <ocs2_ros_interfaces/common/RosMsgConversions.h>
-#include <geometry_msgs/Pose.h>
-#include <geometry_msgs/Wrench.h>
-#include <geometry_msgs/Twist.h>
 #include <ocs2_object_manipulation/definitions.h>
 #include <ros/package.h>
 #include <ocs2_core/misc/LoadData.h>
@@ -23,6 +20,7 @@
 #include <fstream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <ocs2_object_manipulation_ros/StateEstimation.h>
 
 using namespace ocs2;
 using namespace object_manipulation;
@@ -120,6 +118,10 @@ int main(int argc, char **argv)
     // Initialize the ROS node handle
     ros::NodeHandle nh;
 
+    ocs2::object_manipulation::StateEstimationBase robot_SE[AGENT_COUNT];
+    robot_SE[0] = ocs2::object_manipulation::StateEstimationMocap("aliengo");
+    robot_SE[1] = ocs2::object_manipulation::StateEstimationMocap("go1");
+
     // communication setup
     std::string mode;
     DataSend dataSend[AGENT_COUNT];
@@ -165,36 +167,24 @@ int main(int argc, char **argv)
                 euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
                 Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-                Eigen::Matrix<scalar_t, 3, 1> obj_pose_world_frame = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25,
-                                                                               lpf.process(observationPtr_->input(2 + i)), 0.0)
-                                                                                  .finished(); // 0.25 is the radius length - magic number
+                Eigen::Matrix<scalar_t, 3, 1> obj_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(0),
+                                                                                           observationPtr_->state(1), 0.0)
+                                                                                              .finished();
 
                 Eigen::Matrix<scalar_t, 3, 1> obj_vel_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << observationPtr_->state(3),
                                                                                           observationPtr_->state(4), 0.0)
                                                                                              .finished();
 
-                dataSend[i].force[0] = 10 + i;
+                Eigen::Matrix<scalar_t, 3, 1> robot_pose_robot_frame = rotmat.transpose() * (Eigen::Matrix<scalar_t, 3, 1>() << robot_SE[i]._data.position(0),
+                                                                                             robot_SE[i]._data.position(1), 0.0)
+                                                                                                .finished();
+
+                dataSend[i].force[0] = std::fmax(observationPtr_->input(i), 0.0);
+                dataSend[i].omega[2] = observationPtr_->state(5);
+                dataSend[i].velocity[1] = obj_vel_robot_frame(1) +
+                                          (obj_pose_robot_frame(0) + lpf.process(observationPtr_->input(2 + i)) - robot_pose_robot_frame(1));
+
                 send(robot_socket[i], &dataSend[i], sizeof(dataSend[i]), 0);
-                // wrench_msg[i].force.x = std::fmax(observationPtr_->input(i), 0.0);
-                // wrench_msg[i].force.y = 0;
-                // wrench_msg[i].force.z = 0;
-                // wrench_msg[i].torque.x = 0;
-                // wrench_msg[i].torque.y = 0;
-                // wrench_msg[i].torque.z = 0;
-                // pub_wrench[i].publish(wrench_msg[i]);
-
-                // pose_msg[i].position.x = observationPtr_->state(0) + obj_pose_world_frame(0);
-                // pose_msg[i].position.y = observationPtr_->state(1) + obj_pose_world_frame(1);
-                // pose_msg[i].position.z = 0.0;
-                // pub_pose[i].publish(pose_msg[i]);
-
-                // twist_msg[i].linear.x = obj_vel_robot_frame(0);
-                // twist_msg[i].linear.y = obj_vel_robot_frame(1);
-                // twist_msg[i].linear.z = 0;
-                // twist_msg[i].angular.x = 0;
-                // twist_msg[i].angular.y = 0;
-                // twist_msg[i].angular.z = observationPtr_->state(5);
-                // pub_twist[i].publish(twist_msg[i]);
             }
         }
         else
