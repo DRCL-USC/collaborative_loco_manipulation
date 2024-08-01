@@ -87,6 +87,17 @@ target_link_libraries(apply_wrench_node
   ${catkin_LIBRARIES}
 )
 
+# Apply Wrench node Hardware
+add_executable(apply_wrench_node_hardware
+  src/ApplyWrenchNode_Hardware.cpp
+)
+add_dependencies(apply_wrench_node_hardware
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(apply_wrench_node_hardware
+  ${catkin_LIBRARIES}
+)
+
 # Target Pose node
 add_executable(object_manipulation_target
   src/TargetPoseCommand.cpp
