@@ -73,7 +73,7 @@ namespace ocs2
         // Construct base pose msg
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.25; // magic number
+        basePose << state(0), state(1), 0.3; // magic number
         pose.position = getPointMsg(basePose);
 
         // Fill message containers
@@ -112,7 +112,7 @@ namespace ocs2
         // Fill com position and pose msgs
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.25; // magic number
+        basePose << state(0), state(1), 0.3; // magic number
         pose.position = getPointMsg(basePose);
         mpcComPositionMsgs.push_back(pose.position); });
 
@@ -137,7 +137,7 @@ namespace ocs2
 
       marker.pose.position.x = observation.state(0);
       marker.pose.position.y = observation.state(1);
-      marker.pose.position.z = 0.25; // magic number
+      marker.pose.position.z = 0.3; // magic number
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << observation.state(2), 0.0, 0.0;
@@ -148,9 +148,9 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = 0.5;
-      marker.scale.y = 0.5;
-      marker.scale.z = 0.5;
+      marker.scale.x = 0.4;
+      marker.scale.y = 0.4;
+      marker.scale.z = 0.6;
 
       marker.color.a = 1.0; // Don't forget to set the alpha!
       marker.color.r = 0.0;
@@ -175,7 +175,7 @@ namespace ocs2
 
       marker.pose.position.x = targetTrajectories.stateTrajectory[1](0);
       marker.pose.position.y = targetTrajectories.stateTrajectory[1](1);
-      marker.pose.position.z = 0.25; // magic number
+      marker.pose.position.z = 0.3; // magic number
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << targetTrajectories.stateTrajectory[1](2), 0.0, 0.0;
@@ -186,9 +186,9 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = 0.5;
-      marker.scale.y = 0.5;
-      marker.scale.z = 0.5;
+      marker.scale.x = 0.4;
+      marker.scale.y = 0.4;
+      marker.scale.z = 0.6;
 
       marker.color.a = 0.2; // Don't forget to set the alpha!
       marker.color.r = 1.0;
@@ -220,13 +220,13 @@ namespace ocs2
 
         auto scaled_input = observation.input(i) / F_max; 
 
-        Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
+        Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.2 - scaled_input,
                                                                      observation.input(AGENT_COUNT + i), 0.0)
                                                                         .finished(); // magic number
 
         marker.pose.position.x = observation.state(0) + corrected_position(0);
         marker.pose.position.y = observation.state(1) + corrected_position(1);
-        marker.pose.position.z = 0.25; // magic number
+        marker.pose.position.z = 0.3; // magic number
 
         const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
         marker.pose.orientation.x = quat.x();
