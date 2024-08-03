@@ -43,6 +43,7 @@ int main(int argc, char **argv)
     stateEstimation.reset(new ocs2::object_manipulation::StateEstimationMocap("box"));
     while (!stateEstimation->isInitialized())
     {
+      ROS_WARN_STREAM("Waiting for the Mocap system to be initialized ...");
       ros::spinOnce();
     }
   }
