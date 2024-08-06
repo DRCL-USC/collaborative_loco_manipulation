@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <ocs2_core/Types.h>
+#include <geometry_msgs/PoseStamped.h>
 
 namespace ocs2
 {
@@ -12,8 +13,9 @@ namespace ocs2
         using matrix3_t = Eigen::Matrix<scalar_t, 3, 3>;
         using quaternion_t = Eigen::Quaternion<scalar_t>;
 
-        struct StreamedData
+        struct Data
         {
+            double time;
             vector3_t position;
             quaternion_t quaternion;
             matrix3_t rotmat;
@@ -23,6 +25,19 @@ namespace ocs2
             vector3_t omega_world;
             vector3_t omega_body;
             vector_t state;
+            Data()
+            {
+                time = 0.0;
+                position = vector3_t::Zero();
+                quaternion = quaternion_t::Identity();
+                rotmat = matrix3_t::Identity();
+                rpy = vector3_t::Zero();
+                v_world = vector3_t::Zero();
+                v_body = vector3_t::Zero();
+                omega_world = vector3_t::Zero();
+                omega_body = vector3_t::Zero();
+                state = vector_t::Zero(STATE_DIM);
+            }
         };
 
         template <typename T>
@@ -43,14 +58,28 @@ namespace ocs2
             return xyz;
         }
 
-        class StateEstimation
+        class StateEstimationBase
         {
         public:
-            StateEstimation()
+            StateEstimationBase() {};
+            bool isInitialized()
+            {
+                return _data.time != 0.0;
+            }
+            Data _data;
+
+        protected:
+            ros::NodeHandle nh;
+            ros::Subscriber Sub;
+        };
+
+        class StateEstimationCheater : public StateEstimationBase
+        {
+        public:
+            StateEstimationCheater()
             {
                 // Create a subscriber to the gazebo_model_state topic
-                modelStateSub = nh.subscribe("/gazebo/model_states", 10, &StateEstimation::modelStateCallback, this);
-                object_data.state = vector_t::Zero(6);
+                Sub = nh.subscribe("/gazebo/model_states", 10, &StateEstimationCheater::modelStateCallback, this);
             };
 
             void modelStateCallback(const gazebo_msgs::ModelStates &msg)
@@ -64,41 +93,101 @@ namespace ocs2
                         model_index = i;
                     }
                 }
-                object_data.position(0) = msg.pose[model_index].position.x;
-                object_data.position(1) = msg.pose[model_index].position.y;
-                object_data.position(2) = msg.pose[model_index].position.z;
+                _data.position(0) = msg.pose[model_index].position.x;
+                _data.position(1) = msg.pose[model_index].position.y;
+                _data.position(2) = msg.pose[model_index].position.z;
 
-                object_data.quaternion = quaternion_t(msg.pose[model_index].orientation.w, msg.pose[model_index].orientation.x,
-                                                      msg.pose[model_index].orientation.y, msg.pose[model_index].orientation.z);
+                _data.quaternion = quaternion_t(msg.pose[model_index].orientation.w, msg.pose[model_index].orientation.x,
+                                                msg.pose[model_index].orientation.y, msg.pose[model_index].orientation.z);
 
-                object_data.rotmat = object_data.quaternion.toRotationMatrix();
-                // object_data.rpy = object_data.rotmat.eulerAngles(0, 1, 2);
-                object_data.rpy = quatToXyz(object_data.quaternion);
+                _data.rotmat = _data.quaternion.toRotationMatrix();
+                // _data.rpy = _data.rotmat.eulerAngles(0, 1, 2);
+                _data.rpy = quatToXyz(_data.quaternion);
 
-                object_data.v_world(0) = msg.twist[model_index].linear.x;
-                object_data.v_world(1) = msg.twist[model_index].linear.y;
-                object_data.v_world(2) = msg.twist[model_index].linear.z;
+                _data.v_world(0) = msg.twist[model_index].linear.x;
+                _data.v_world(1) = msg.twist[model_index].linear.y;
+                _data.v_world(2) = msg.twist[model_index].linear.z;
 
-                object_data.v_body = object_data.rotmat * object_data.v_world;
+                _data.v_body = _data.rotmat * _data.v_world;
 
-                object_data.omega_world(0) = msg.twist[model_index].angular.x;
-                object_data.omega_world(1) = msg.twist[model_index].angular.y;
-                object_data.omega_world(2) = msg.twist[model_index].angular.z;
+                _data.omega_world(0) = msg.twist[model_index].angular.x;
+                _data.omega_world(1) = msg.twist[model_index].angular.y;
+                _data.omega_world(2) = msg.twist[model_index].angular.z;
 
-                object_data.omega_body = object_data.rotmat * object_data.omega_world;
+                _data.omega_body = _data.rotmat * _data.omega_world;
 
-                object_data.state << object_data.position(0), object_data.position(1), object_data.rpy(2),
-                    object_data.v_world(0), object_data.v_world(1), object_data.omega_world(2);
+                _data.state << _data.position(0), _data.position(1), _data.rpy(2),
+                    _data.v_world(0), _data.v_world(1), _data.omega_world(2);
 
                 // ROS_INFO("I heard: x =%f, y=%f, yaw=%f , vx=%f, vy=%f, omega=%f",
-                //          object_data.state[0], object_data.state[1], object_data.state[2], object_data.state[3], object_data.state[4], object_data.state[5]);
+                //          _data.state[0], _data.state[1], _data.state[2], _data.state[3], _data.state[4], _data.state[5]);
+            };
+        };
+
+        class StateEstimationMocap : public StateEstimationBase
+        {
+        public:
+            StateEstimationMocap(std::string object_name)
+            {
+                // Create a subscriber to mocap topic
+                Sub = nh.subscribe("/vrpn_client_node/" + object_name + "/pose", 1, &StateEstimationMocap::mocapCallback, this);
             };
 
-            StreamedData object_data;
+            void mocapCallback(const geometry_msgs::PoseStamped &msg)
+            {
+                _data.time = msg.header.stamp.toSec();
+
+                _data.position[0] = msg.pose.position.x;
+                _data.position[1] = msg.pose.position.y;
+                _data.position[2] = msg.pose.position.z;
+
+                // ROS_INFO("I heard: x =%f, y=%f, z=%f", _data.position[0], _data.position[1], _data.position[2]);
+
+                _data.quaternion = quaternion_t(msg.pose.orientation.w, msg.pose.orientation.x,
+                                                msg.pose.orientation.y, msg.pose.orientation.z);
+
+                _data.rotmat = _data.quaternion.toRotationMatrix();
+                _data.rpy = quatToXyz(_data.quaternion);
+
+                LinearVelocityCalc();
+                AngularVelocityCalc();
+
+                _data.state << _data.position(0), _data.position(1), _data.rpy(2),
+                    _data.v_world(0), _data.v_world(1), _data.omega_world(2);
+
+                _dataPrev.time = _data.time;
+            }
+
+            void LinearVelocityCalc()
+            {
+                double dt = _data.time - _dataPrev.time;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    _data.v_world[i] = (_data.position[i] - _dataPrev.position[i]) / dt;
+                }
+                _data.v_body = _data.rotmat * _data.v_world;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    _dataPrev.position[i] = _data.position[i];
+                }
+            }
+
+            void AngularVelocityCalc()
+            {
+                double dt = _data.time - _dataPrev.time;
+
+                _data.omega_world[0] = (2 / dt) * (_dataPrev.quaternion.w() * _data.quaternion.x() - _dataPrev.quaternion.x() * _data.quaternion.w() - _dataPrev.quaternion.y() * _data.quaternion.z() + _dataPrev.quaternion.z() * _data.quaternion.y());
+                _data.omega_world[1] = (2 / dt) * (_dataPrev.quaternion.w() * _data.quaternion.y() + _dataPrev.quaternion.x() * _data.quaternion.z() - _dataPrev.quaternion.y() * _data.quaternion.w() - _dataPrev.quaternion.z() * _data.quaternion.x());
+                _data.omega_world[2] = (2 / dt) * (_dataPrev.quaternion.w() * _data.quaternion.z() - _dataPrev.quaternion.x() * _data.quaternion.y() + _dataPrev.quaternion.y() * _data.quaternion.x() - _dataPrev.quaternion.z() * _data.quaternion.w());
+
+                _data.omega_body = _data.rotmat * _data.omega_world;
+                _dataPrev.quaternion = _data.quaternion;
+            }
 
         private:
-            ros::NodeHandle nh;
-            ros::Subscriber modelStateSub;
+            Data _dataPrev;
         };
 
     } // namespace object_manipulation

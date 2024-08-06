@@ -46,13 +46,6 @@ namespace ocs2
       boost::filesystem::create_directories(libraryFolderPath);
       std::cerr << "[ObjectInterface] Generated library path: " << libraryFolderPath << "\n";
 
-      // Default initial condition
-      loadData::loadEigenMatrix(taskFile, "initialState", initialState_);
-      if (verbose)
-      {
-        std::cerr << "x_init:   " << initialState_.transpose() << "\n";
-      }
-
       // DDP-MPC settings
       ddpSettings_ = ddp::loadSettings(taskFile, "ddp", verbose);
       mpcSettings_ = mpc::loadSettings(taskFile, "mpc", verbose);

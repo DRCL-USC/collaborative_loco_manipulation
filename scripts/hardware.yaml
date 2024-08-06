@@ -1,0 +1,30 @@
+session_name: ObjectManipulation
+windows:
+  - window_name: Planner
+    layout: tiled
+    panes:
+      - shell_command:
+        - roslaunch ocs2_object_manipulation_ros manipulation_stack.launch rviz:=true multiplot:=false record_data:=true sim:=false
+      - shell_command:
+        - sleep 10
+        - rosrun ocs2_object_manipulation_ros apply_wrench_node_hardware
+    shell_command_before:
+      - source ~/Projects/manipulation_ws/devel/setup.bash 
+
+  - window_name: Robot1
+    layout: tiled
+    panes:
+      - shell_command:
+        - sleep 2
+        - ./aliengo_hardware_control
+    shell_command_before:
+      - cd ~/Projects/manipulation_ws/devel/lib/quadruped_hardware
+
+  # - window_name: Robot2
+  #   layout: tiled
+  #   panes:
+  #     - shell_command:
+  #       - sleep 3
+  #       - ./go1_hardware_control
+  #   shell_command_before:
+  #     - cd ~/Projects/manipulation_ws/devel/lib/quadruped_hardware
