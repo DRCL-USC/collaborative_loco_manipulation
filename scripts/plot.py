@@ -76,7 +76,7 @@ def update_plot(frame, timestamps, input):
 
     # Plot the input at the current frame
     for i in range(2):
-        plt.plot(timestamps[:frame+1], [inp[i] for inp in input][:frame+1], label=f'Robot {i}', linewidth= 6)
+        plt.plot(timestamps[:frame+1], [inp[i] for inp in input][:frame+1], label=f'Robot {i+1}', linewidth= 6)
 
     plt.axis([0, timestamps[-1], -0.05, 70])
     plt.legend(loc='upper right', fontsize=24)
@@ -87,24 +87,12 @@ def update_plot(frame, timestamps, input):
 
 def animate_input(timestamps, input):
     fig = plt.figure(figsize=(20, 6))
-
-    def update_and_pause(frame):
-        if frame == 0:
-            # Initial frame, no sleep
-            update_plot(frame, timestamps, input)
-        else:
-            # Calculate the delay based on timestamps
-            delay = (timestamps[frame] - timestamps[frame - 1])
-            time.sleep(delay)  # Sleep for the appropriate time interval to simulate real-time
-            update_plot(frame, timestamps, input)
     
     # Create the animation
-    ani = animation.FuncAnimation(fig, update_and_pause, frames=len(timestamps), interval=1, repeat=False)
+    ani = animation.FuncAnimation(fig, update_plot, frames=len(timestamps), fargs=[timestamps, input] ,interval=(timestamps[-1]*1000)//len(timestamps))
 
     # Save the animation as a video file
-    fps = 10
-    writervideo = animation.FFMpegWriter(fps=fps)
-    ani.save('input_animation.mp4', writer=writervideo)
+    ani.save('input_animation.mp4', writer='ffmpeg')
 
 if __name__ == "__main__":
     # Specify the path to your ROS bag file and topic name
