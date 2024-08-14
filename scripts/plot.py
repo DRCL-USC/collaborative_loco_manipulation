@@ -3,6 +3,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from datetime import datetime
 from ocs2_msgs.msg import mpc_observation
+import matplotlib.animation as animation
+import time
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
@@ -68,6 +70,42 @@ def plot_Force(timestamps1, input1, timestamps2, input2):
         plt.tight_layout()
         plt.savefig(f'Comparing_Forces_{i+1}.pdf' , dpi = 900)
 
+def update_plot(frame, timestamps, input):
+    # Clear the previous plot
+    plt.cla()
+
+    # Plot the input at the current frame
+    for i in range(2):
+        plt.plot(timestamps[:frame+1], [inp[i] for inp in input][:frame+1], label=f'Robot {i}', linewidth= 6)
+
+    plt.axis([0, timestamps[-1], -0.05, 70])
+    plt.legend(loc='upper right', fontsize=24)
+    plt.xlabel('Time [s]')
+    plt.ylabel('Force [N]')
+    plt.tight_layout()    
+
+
+def animate_input(timestamps, input):
+    fig = plt.figure(figsize=(20, 6))
+
+    def update_and_pause(frame):
+        if frame == 0:
+            # Initial frame, no sleep
+            update_plot(frame, timestamps, input)
+        else:
+            # Calculate the delay based on timestamps
+            delay = (timestamps[frame] - timestamps[frame - 1])
+            time.sleep(delay)  # Sleep for the appropriate time interval to simulate real-time
+            update_plot(frame, timestamps, input)
+    
+    # Create the animation
+    ani = animation.FuncAnimation(fig, update_and_pause, frames=len(timestamps), interval=1, repeat=False)
+
+    # Save the animation as a video file
+    fps = 10
+    writervideo = animation.FFMpegWriter(fps=fps)
+    ani.save('input_animation.mp4', writer=writervideo)
+
 if __name__ == "__main__":
     # Specify the path to your ROS bag file and topic name
     bag_file_adaptive = '/home/mohsen/Projects/manipulation_ws/bagfiles/adaptive.bag'
@@ -80,5 +118,10 @@ if __name__ == "__main__":
     timestamps_nonadaptive, input_nonadaptive, state_nonadaptive = read_rosbag_data(bag_file_nonadaptive, topic, tstart, tend)
     
     # Plot the data
-    plot_Force(timestamps_adaptive, input_adaptive, timestamps_nonadaptive, input_nonadaptive)
-    plt.show()
+    # plot_Force(timestamps_adaptive, input_adaptive, timestamps_nonadaptive, input_nonadaptive)
+    # plt.show()
+
+    # Create an animation from the input plots
+    animate_input(timestamps_adaptive, input_adaptive)
+
+    
