@@ -20,6 +20,16 @@ windows:
       - shell_command:
         - sleep 6
         - rosrun quadruped_sim quad_sim_control $robot_type __ns:=$ns
+      - shell_command:
+        - sleep 8
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"PDSTAND\"'"
+      - shell_command:
+        - sleep 10
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"QPSTAND\"'"  
+      - shell_command:
+        - sleep 11
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"  
+
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_1
@@ -37,6 +47,15 @@ windows:
       - shell_command:
         - sleep 6
         - rosrun quadruped_sim quad_sim_control $robot_type __ns:=$ns
+      - shell_command:
+        - sleep 8
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"PDSTAND\"'"
+      - shell_command:
+        - sleep 10
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"QPSTAND\"'"  
+      - shell_command:
+        - sleep 11
+        - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"    
     shell_command_before:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2
