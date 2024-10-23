@@ -24,75 +24,34 @@ public:
         visualization_msgs::MarkerArray markerArray;
         ros::Time timeStamp = ros::Time::now();
 
-        // Marker visualization
-        visualization_msgs::Marker marker;
-        marker.header.frame_id = frameId_;
-        marker.header.stamp = timeStamp;
-        marker.ns = "obstacles";
-        marker.id = 0;
-        marker.type = visualization_msgs::Marker::CUBE_LIST;
-        marker.action = visualization_msgs::Marker::ADD;
-
-        marker.scale.x = 0.5;
-        marker.scale.y = 0.5;
-        marker.scale.z = 0.5;
-
-        marker.color.a = 1.0; // Don't forget to set the alpha!
-        marker.color.r = 0.0;
-        marker.color.g = 0.0;
-        marker.color.b = 1.0;
-
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
-
-        // Define a list of points
         for (int i = 0; i < obstacles_pose.size(); i++)
         {
-            geometry_msgs::Point p;
-            p.x = obstacles_pose[i].first;
-            p.y = obstacles_pose[i].second;
-            p.z = 0.25; // magic number
-            marker.points.push_back(p);
+            // Marker visualization
+            visualization_msgs::Marker marker;
+            marker.header.frame_id = frameId_;
+            marker.header.stamp = timeStamp;
+            marker.ns = "obstacles";
+            marker.id = i;
+            marker.type = visualization_msgs::Marker::MESH_RESOURCE;
+            marker.mesh_resource = "package://ocs2_object_manipulation_ros/urdf/actor.dae";
+            marker.mesh_use_embedded_materials = true;
+            marker.action = visualization_msgs::Marker::ADD;
+
+            marker.scale.x = 1;
+            marker.scale.y = 1;
+            marker.scale.z = 1;
+
+            marker.pose.orientation.x = 0.0;
+            marker.pose.orientation.y = 0.0;
+            marker.pose.orientation.z = 0.0;
+            marker.pose.orientation.w = 1.0;
+
+            marker.pose.position.x = obstacles_pose[i].first;
+            marker.pose.position.y = obstacles_pose[i].second;
+            marker.pose.position.z = 0.7; // magic number
+
+            markerArray.markers.push_back(marker);
         }
-
-        markerArray.markers.push_back(marker);
-
-        // Marker visualization
-        visualization_msgs::Marker marker2;
-        marker2.header.frame_id = frameId_;
-        marker2.header.stamp = timeStamp;
-        marker2.ns = "obstacles";
-        marker2.id = 1;
-        marker2.type = visualization_msgs::Marker::SPHERE_LIST;
-        marker2.action = visualization_msgs::Marker::ADD;
-
-        marker2.scale.x = 1;
-        marker2.scale.y = 1;
-        marker2.scale.z = 1;
-
-        marker2.color.a = 0.7; // Don't forget to set the alpha!
-        marker2.color.r = 0.0;
-        marker2.color.g = 1.0;
-        marker2.color.b = 0.0;
-
-        marker2.pose.orientation.x = 0.0;
-        marker2.pose.orientation.y = 0.0;
-        marker2.pose.orientation.z = 0.0;
-        marker2.pose.orientation.w = 1.0;
-
-        // Define a list of points
-        for (int i = 0; i < obstacles_pose.size(); i++)
-        {
-            geometry_msgs::Point p;
-            p.x = obstacles_pose[i].first;
-            p.y = obstacles_pose[i].second;
-            p.z = 0.25; //magic number
-            marker2.points.push_back(p);
-        }
-
-        // markerArray.markers.push_back(marker2);
 
         obstaclesPublisher_.publish(markerArray);
     }
