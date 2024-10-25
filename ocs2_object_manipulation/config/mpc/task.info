@@ -10,6 +10,13 @@ object_parameters
   Inertia  1
   rx     0
   ry     0
+
+  size
+  { 
+    [0] 0.5
+    [1] 2
+    [2] 0.5
+  }
 }
 
 yaw_init
@@ -139,10 +146,10 @@ cbf_penalty_config
 ; state weight matrix
 Q
 {
-  scaling 1e-1
-  (0,0)  20.0 ; x1
-  (1,1)  22.0 ; x2
-  (2,2)  2.0 ; x3
+  scaling 1e0
+  (0,0)  50.0 ; x1
+  (1,1)  50.0 ; x2
+  (2,2)  20.0 ; x3
   (3,3)  3.0 ; x4
   (4,4)  3.0 ; x5
   (5,5)  1.0 ; x6
@@ -163,10 +170,10 @@ R
 ; final state weight matrix
 Q_final
 {
-  scaling 1e0
-  (0,0)  150  ; x1
-  (1,1)  150  ; x2
-  (2,2)  3  ; x3
+  scaling 1e-2
+  (0,0)  1  ; x1
+  (1,1)  1  ; x2
+  (2,2)  1  ; x3
   (3,3)  3  ; x4
   (4,4)  3  ; x5
   (5,5)  8  ; x6

@@ -22,12 +22,12 @@
         <model name="object">
             <link name="object">
                 <inertial>
-                    <mass>6</mass>
+                    <mass>8</mass>
                     <inertia>
-                        <ixx>0.25</ixx>
+                        <ixx>1</ixx>
                         <ixy>0.0</ixy>
                         <ixz>0.0</ixz>
-                        <iyy>0.25</iyy>
+                        <iyy>1</iyy>
                         <iyz>0.0</iyz>
                         <izz>1</izz>
                     </inertia>
@@ -35,14 +35,14 @@
                 <collision name="static_box_collision">
                     <geometry>
                         <box>
-                            <size>0.5 0.5 0.5</size>
+                            <size>0.5 2 0.5</size>
                         </box>
                     </geometry>
                     <surface>
                         <friction>
                             <ode>
-                                <mu>0.2</mu>
-                                <mu2>0.2</mu2>
+                                <mu>0.3</mu>
+                                <mu2>0.3</mu2>
                             </ode>
                         </friction>
                         <contact>
@@ -53,7 +53,7 @@
                 <visual name="static_box_visual">
                     <geometry>
                         <box>
-                            <size>0.5 0.5 0.5</size>
+                            <size>0.5 2 0.5</size>
                         </box>
                     </geometry>
                     <material>
@@ -66,7 +66,7 @@
 
         </model>
 
-        <model name="obstacle">
+        <!-- <model name="obstacle">
             <static>true</static>
             <pose>3.5 1.5 0.25 0 0 0</pose>
             <link name="body">
@@ -158,7 +158,7 @@
                     </material>
                 </visual>
             </link>
-        </model>
+        </model> -->
 
 
     </world>

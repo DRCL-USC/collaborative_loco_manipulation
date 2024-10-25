@@ -110,9 +110,9 @@ namespace ocs2
       // Obstacles
       obstaclesPtr_.reset(new Obstacles(obstacles_pose));
 
-      problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
-                                           std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstaclesPtr_, obstacles_radius, alpha),
-                                                                                              std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
+      // problem_.stateSoftConstraintPtr->add("Obstacle_object_cbf",
+      //                                      std::unique_ptr<StateCost>(new StateSoftConstraint(std::make_unique<ObjectCBFConstraint>(obstaclesPtr_, obstacles_radius, alpha),
+      //                                                                                         std::make_unique<RelaxedBarrierPenalty>(boundsConfig))));
       
       // // Robot CBF
       // problem_.softConstraintPtr->add("Obstacle_robot_cbf",
