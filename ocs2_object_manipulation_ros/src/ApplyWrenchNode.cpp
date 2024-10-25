@@ -46,6 +46,8 @@ int main(int argc, char **argv)
     loadData::loadStdVector(taskFile, "yaw_init", agents_init_yaw_, false);
     loadData::loadCppDataType(taskFile, "targetDisplacementError", targetError);
     LowPassFilter<scalar_t> lpf(0.1);
+    scalar_array_t object_size;
+    loadData::loadStdVector(taskFile, "object_parameters.size", object_size, false);
 
     auto WrenchCallback = [&](const ocs2_msgs::mpc_observation::ConstPtr &msg)
     {
@@ -54,7 +56,7 @@ int main(int argc, char **argv)
         scalar_t distance = sqrt(pow(observationPtr_->state(0) - targetTrajectories.stateTrajectory.back()[0], 2) +
                                  pow(observationPtr_->state(1) - targetTrajectories.stateTrajectory.back()[1], 2));
 
-        if (distance < targetError) 
+        if (distance < targetError)
         {
             start = false;
         }
@@ -68,7 +70,7 @@ int main(int argc, char **argv)
                 euler << observationPtr_->state(2) + agents_init_yaw_[i], 0.0, 0.0;
                 Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-                Eigen::Matrix<scalar_t, 3, 1> obj_pose_world_frame = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25,
+                Eigen::Matrix<scalar_t, 3, 1> obj_pose_world_frame = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -object_size[i] / 2,
                                                                                lpf.process(observationPtr_->input(2 + i)), 0.0)
                                                                                   .finished(); // 0.25 is the radius length - magic number
 

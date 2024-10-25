@@ -10,12 +10,15 @@ namespace ocs2
   namespace object_manipulation
   {
 
-    ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile): taskFile_(taskfile) { 
-          loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
-          loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
-          loadData::loadCppDataType(taskFile_, "input_bounds.F_max", F_max);
-          launchVisualizerNode(nodeHandle); }
-          
+    ObjectDummyVisualization::ObjectDummyVisualization(ros::NodeHandle &nodeHandle, const std::string taskfile) : taskFile_(taskfile)
+    {
+      loadData::loadStdVector(taskFile_, "yaw_init", init_yaw, false);
+      loadData::loadStdVectorOfPair(taskFile_, "obstacles.pose", obstacles_pose, false);
+      loadData::loadCppDataType(taskFile_, "input_bounds.F_max", F_max);
+      loadData::loadStdVector(taskFile_, "object_parameters.size", object_size, false);
+      launchVisualizerNode(nodeHandle);
+    }
+
     void ObjectDummyVisualization::update(const SystemObservation &observation, const PrimalSolution &policy, const CommandData &command)
     {
 
@@ -37,7 +40,6 @@ namespace ocs2
       std_msgs::Bool msg;
       msg.data = true;
       obstaclesPublisher_.publish(msg);
-
 
       // Publish desired trajectory
       publishDesiredTrajectory(timeStamp, command.mpcTargetTrajectories_);
@@ -73,7 +75,7 @@ namespace ocs2
         // Construct base pose msg
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.25; // magic number
+        basePose << state(0), state(1), object_size[2] / 2;;
         pose.position = getPointMsg(basePose);
 
         // Fill message containers
@@ -112,7 +114,7 @@ namespace ocs2
         // Fill com position and pose msgs
         geometry_msgs::Pose pose;
         vector_t basePose(3);
-        basePose << state(0), state(1), 0.25; // magic number
+        basePose << state(0), state(1), object_size[2] / 2;
         pose.position = getPointMsg(basePose);
         mpcComPositionMsgs.push_back(pose.position); });
 
@@ -137,7 +139,7 @@ namespace ocs2
 
       marker.pose.position.x = observation.state(0);
       marker.pose.position.y = observation.state(1);
-      marker.pose.position.z = 0.25; // magic number
+      marker.pose.position.z = object_size[2] / 2; 
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << observation.state(2), 0.0, 0.0;
@@ -148,9 +150,9 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = 0.5;
-      marker.scale.y = 0.5;
-      marker.scale.z = 0.5;
+      marker.scale.x = object_size[0];
+      marker.scale.y = object_size[1];
+      marker.scale.z = object_size[2];
 
       marker.color.a = 1.0; // Don't forget to set the alpha!
       marker.color.r = 0.0;
@@ -175,7 +177,7 @@ namespace ocs2
 
       marker.pose.position.x = targetTrajectories.stateTrajectory[1](0);
       marker.pose.position.y = targetTrajectories.stateTrajectory[1](1);
-      marker.pose.position.z = 0.25; // magic number
+      marker.pose.position.z = object_size[2] / 2;
 
       Eigen::Matrix<scalar_t, 3, 1> euler;
       euler << targetTrajectories.stateTrajectory[1](2), 0.0, 0.0;
@@ -186,9 +188,9 @@ namespace ocs2
       marker.pose.orientation.z = quat.z();
       marker.pose.orientation.w = quat.w();
 
-      marker.scale.x = 0.5;
-      marker.scale.y = 0.5;
-      marker.scale.z = 0.5;
+      marker.scale.x = object_size[0];
+      marker.scale.y = object_size[1];
+      marker.scale.z = object_size[2];
 
       marker.color.a = 0.2; // Don't forget to set the alpha!
       marker.color.r = 1.0;
@@ -218,15 +220,13 @@ namespace ocs2
         euler << observation.state(2) + init_yaw[i], 0.0, 0.0;
         Eigen::Matrix3d rotmat = getRotationMatrixFromZyxEulerAngles(euler); // (yaw, pitch, roll)
 
-        auto scaled_input = observation.input(i) / F_max; 
+        auto scaled_input = observation.input(i) / F_max;
 
-        Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -0.25 - scaled_input,
-                                                                     observation.input(AGENT_COUNT + i), 0.0)
-                                                                        .finished(); // magic number
+        Eigen::Matrix<scalar_t, 3, 1> corrected_position = rotmat * (Eigen::Matrix<scalar_t, 3, 1>() << -object_size[i] / 2 - scaled_input, observation.input(AGENT_COUNT + i), 0.0).finished();
 
         marker.pose.position.x = observation.state(0) + corrected_position(0);
         marker.pose.position.y = observation.state(1) + corrected_position(1);
-        marker.pose.position.z = 0.25; // magic number
+        marker.pose.position.z = object_size[2] / 2; 
 
         const Eigen::Quaternion<scalar_t> quat = getQuaternionFromEulerAnglesZyx(euler); // (yaw, pitch, roll)
         marker.pose.orientation.x = quat.x();
