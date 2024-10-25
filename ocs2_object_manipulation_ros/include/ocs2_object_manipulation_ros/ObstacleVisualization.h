@@ -33,7 +33,7 @@ public:
         marker.type = visualization_msgs::Marker::CUBE_LIST;
         marker.action = visualization_msgs::Marker::ADD;
 
-        marker.scale.x = 0.5;
+        marker.scale.x = 3;
         marker.scale.y = 0.5;
         marker.scale.z = 0.5;
 
