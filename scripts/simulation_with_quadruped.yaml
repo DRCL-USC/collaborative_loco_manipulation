@@ -5,8 +5,17 @@ windows:
       - shell_command:
         - roslaunch ocs2_object_manipulation_ros gazebo.launch gui:=false rviz:=true multiplot:=false record_data:=true
       - shell_command:
-        - sleep 2
-        - roslaunch unitree_description spawn_robot.launch robot_type:=aliengo ns:=alien1 x_pos:=-0.73 y_pos:=0.0 yaw_angle:=0.0 
+        - sleep 1
+        - rosrun ocs2_object_manipulation_ros apply_wrench_node
+      - shell_command:
+        - sleep 10
+        - rosrun ocs2_object_manipulation_ros object_manipulation_target_predefined  
+    shell_command_before:
+      - source ~/Projects/manipulation_ws/devel/setup.bash 
+
+  - window_name: Robot1
+    layout: tiled
+    panes:
       - shell_command:
         - sleep 3
         - roslaunch unitree_description spawn_robot.launch robot_type:=aliengo ns:=alien2 x_pos:=0.0 y_pos:=-0.73 yaw_angle:=1.57
