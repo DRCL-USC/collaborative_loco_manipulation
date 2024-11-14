@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   const scalar_array_t relativeBaseLimit{10.0, 10.0, 180.0};
 
   vector_t target(3);
-  target << 7, 3, 30;
+  target << 7, 3, 0;
 
   SystemObservation latestObservation_;
   bool observation_recieved = false;
