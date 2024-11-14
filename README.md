@@ -44,7 +44,7 @@ Clone the code:
 ```
 # Navigate to the directory of src
 cd <directory_to_ws>/<catkin_ws_name>/src
-git clone --recurse-submodules 
+git clone --recurse-submodules https://github.com/DRCL-USC/collaborative_loco_manipulation.git
 ```
 Build simulation package for planner as well as loco-manipulation controller:
 ```
