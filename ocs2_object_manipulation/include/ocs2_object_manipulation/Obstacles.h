@@ -20,7 +20,7 @@ namespace ocs2
                 {
                     for (int i = 0; i < obstacles_pose_init.size(); i++)
                     {
-                        obstacles_pose_[i].second = obstacles_pose_init[i].second + 2 * sin(initTime * 2 * M_PI / 10);
+                        obstacles_pose_[i].second = obstacles_pose_init[i].second + pow(-1, i) * (i + 1) * sin(initTime * 2 * M_PI / 20);
                         //    std::cout << "Obstacle " << i << ": "<< obstacles_pose_[i].first << " " << obstacles_pose_[i].second << std::endl;
                     }
                 }
