@@ -1,9 +1,6 @@
 [submodule "ocs2"]
 	path = ocs2
 	url = https://github.com/leggedrobotics/ocs2.git
-[submodule "ocs2_robotic_assets"]
-	path = ocs2_robotic_assets
-	url = https://github.com/leggedrobotics/ocs2_robotic_assets.git
 [submodule "Loco_manipulation_control"]
 	path = Loco_manipulation_control
 	url = https://github.com/DRCL-USC/Loco_manipulation_control.git
