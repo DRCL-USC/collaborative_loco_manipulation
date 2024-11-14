@@ -6,8 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Grid1
-        - /Global Options1
-        - /Grid1
         - /Grid1/Offset1
         - /Marker1
       Splitter Ratio: 0.4993342161178589
@@ -39,10 +37,8 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 1
-    - Alpha: 1
       Cell Size: 1
       Class: rviz/Grid
-      Color: 0; 0; 0
       Color: 0; 0; 0
       Enabled: true
       Line Style:
@@ -118,22 +114,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FL_calf_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FL_foot:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         FL_hip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_hip_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -153,17 +139,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FL_thigh_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -188,17 +164,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FR_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_thigh_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -210,11 +176,6 @@ Visualization Manager:
           Value: true
         Link Tree Style: Links in Alphabetic Order
         RL_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RL_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -239,11 +200,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RL_thigh:
           Alpha: 1
           Show Axes: false
@@ -254,17 +210,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_thigh_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -289,17 +235,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RR_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_thigh_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -314,7 +250,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        imu_link:
         imu_link:
           Alpha: 1
           Show Axes: false
@@ -350,22 +285,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FL_calf_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FL_foot:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         FL_hip:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FL_hip_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -385,17 +310,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FL_thigh_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -420,17 +335,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        FR_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         FR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        FR_thigh_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -442,11 +347,6 @@ Visualization Manager:
           Value: true
         Link Tree Style: Links in Alphabetic Order
         RL_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RL_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -471,11 +371,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RL_thigh:
           Alpha: 1
           Show Axes: false
@@ -486,17 +381,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RL_thigh_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RR_calf:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_calf_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -521,17 +406,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        RR_hip_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         RR_thigh:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        RR_thigh_rotor:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -546,7 +421,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        imu_link:
         imu_link:
           Alpha: 1
           Show Axes: false
