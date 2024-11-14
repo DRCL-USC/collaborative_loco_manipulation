@@ -14,8 +14,8 @@ object_parameters
 
 yaw_init
 {
-  [0] 0
-  [1] 1.5708
+  [0] 0.78
+  [1] 2.3508
 }
 
 obstacles
@@ -134,6 +134,17 @@ cbf_penalty_config
   mu                       0.8
   delta                    0.5
   alpha                    1
+}
+
+; initial state
+initialState
+{
+  (0,0) 0.0   ; x
+  (1,0) 0.0   ; y
+  (2,0) 0.78   ; theta
+  (3,0) 0.0   ; x_dot
+  (4,0) 0.0   ; y_dot
+  (5,0) 0.0   ; theta_dot
 }
 
 ; state weight matrix

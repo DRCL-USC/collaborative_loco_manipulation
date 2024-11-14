@@ -34,9 +34,9 @@ windows:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_1
       - export robot_type=aliengo
-      - export x_pos=-0.73
-      - export y_pos=0.0
-      - export yaw_angle=0.0
+      - export x_pos=-0.5
+      - export y_pos=-0.5
+      - export yaw_angle=0.78
 
   - window_name: Robot2
     layout: tiled
@@ -60,6 +60,6 @@ windows:
       - source ~/Projects/manipulation_ws/devel/setup.bash 
       - export ns=robot_2
       - export robot_type=aliengo
-      - export x_pos=0.0
-      - export y_pos=-0.73
-      - export yaw_angle=1.57
+      - export x_pos=0.5
+      - export y_pos=-0.5
+      - export yaw_angle=2.35
