@@ -48,7 +48,7 @@ public:
         marker.pose.orientation.w = 1.0;
 
         // Define a list of points
-        for (int i = 0; i < obstacles_pose.size(); i++)
+        for (int i = 0; i < 2; i++)
         {
             geometry_msgs::Point p;
             p.x = obstacles_pose[i].first;
