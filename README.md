@@ -1,5 +1,5 @@
 # Adaptive Motion Planning for Safety-Critical Collaborative Loco-manipulation
-This repository contains the code for the paper "Hierarchical Adaptive Motion Planning with Nonlinear Model Predictive Control for Safety-Critical Collaborative Loco-Manipulation". This is a hierarchical control system for object manipulation using a team of quadrupedal robots. A high-level NMPC planner generates collision-free paths and the decentralized loco-manipulation controller then ensures each robot maintains stable locomotion and manipulation based on the planner’s guidance.
+This repository contains the code for the paper "Hierarchical Adaptive Motion Planning with Nonlinear Model Predictive Control for Safety-Critical Collaborative Loco-Manipulation." This is a hierarchical control system for object manipulation using a team of quadrupedal robots. A high-level NMPC planner generates collision-free paths, and the decentralized loco-manipulation controller ensures each robot maintains stable locomotion and manipulation based on the planner’s guidance.
 
 ## Video Demonstration
 [![Video Title](https://img.youtube.com/vi/cU_qevkW86I/0.jpg)](https://www.youtube.com/watch?v=cU_qevkW86I)
@@ -46,7 +46,7 @@ Clone the code:
 cd <directory_to_ws>/<catkin_ws_name>/src
 git clone --recurse-submodules https://github.com/DRCL-USC/collaborative_loco_manipulation.git
 ```
-Build simulation package for planner as well as loco-manipulation controller:
+Build simulation package for the planner as well as loco-manipulation controller:
 ```
 cd ..
 catkin build ocs2_object_manipulation_ros quadruped_sim 
