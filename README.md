@@ -2,7 +2,7 @@
 This repository contains the code for the paper "Hierarchical Adaptive Motion Planning with Nonlinear Model Predictive Control for Safety-Critical Collaborative Loco-Manipulation." This is a hierarchical control system for object manipulation using a team of quadrupedal robots. A high-level NMPC planner generates collision-free paths, and the decentralized loco-manipulation controller ensures each robot maintains stable locomotion and manipulation based on the planner’s guidance.
 
 ## Video Demonstration
-
+[![Video Title](https://img.youtube.com/vi/cU_qevkW86I/0.jpg)](https://www.youtube.com/watch?v=cU_qevkW86I)
 
 # Installation
 ## Prerequisites
