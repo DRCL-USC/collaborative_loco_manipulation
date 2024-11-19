@@ -9,7 +9,7 @@ windows:
         - sleep 10
         - rosrun ocs2_object_manipulation_ros apply_wrench_node_hardware
     shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - source $PWD/../../../devel/setup.bash 
 
   - window_name: Robot1
     layout: tiled
@@ -18,13 +18,13 @@ windows:
         - sleep 2
         - ./aliengo_hardware_control
     shell_command_before:
-      - cd ~/Projects/manipulation_ws/devel/lib/quadruped_hardware
+      - source $PWD/../../../devel/setup.bash 
 
-  # - window_name: Robot2
-  #   layout: tiled
-  #   panes:
-  #     - shell_command:
-  #       - sleep 3
-  #       - ./go1_hardware_control
-  #   shell_command_before:
-  #     - cd ~/Projects/manipulation_ws/devel/lib/quadruped_hardware
+  - window_name: Robot2
+    layout: tiled
+    panes:
+      - shell_command:
+        - sleep 3
+        - ./go1_hardware_control
+    shell_command_before:
+      - source $PWD/../../../devel/setup.bash 

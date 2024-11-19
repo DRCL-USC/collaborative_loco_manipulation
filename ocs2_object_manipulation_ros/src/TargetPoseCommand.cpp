@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   loadData::loadCppDataType(taskFile, "targetDisplacementVelocity", targetDisplacementVelocity);
 
   // goalPose: [deltaX, deltaY, deltaYaw]
-  const scalar_array_t relativeBaseLimit{10.0, 10.0, 180.0};
+  const scalar_array_t relativeBaseLimit{10.0, 10.0, 30.0};
   TargetTrajectoriesKeyboardPublisher targetPoseCommand(nodeHandle, robotName, relativeBaseLimit, &commandLineToTargetTrajectories);
 
   const std::string commandMsg = "Enter XY and Yaw (deg) displacements for the object, separated by spaces";

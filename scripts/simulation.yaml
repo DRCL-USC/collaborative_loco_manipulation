@@ -9,7 +9,7 @@ windows:
         - sleep 1
         - rosrun ocs2_object_manipulation_ros apply_wrench_node
     shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - source $PWD/../../../devel/setup.bash 
 
   - window_name: Robot1
     layout: tiled
@@ -31,7 +31,7 @@ windows:
         - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"  
 
     shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - source $PWD/../../../devel/setup.bash 
       - export ns=robot_1
       - export robot_type=aliengo
       - export x_pos=-0.73
@@ -57,7 +57,7 @@ windows:
         - sleep 11
         - "rostopic pub --once /$ns/FSM std_msgs/String 'data: \"MANIPULATION\"'"    
     shell_command_before:
-      - source ~/Projects/manipulation_ws/devel/setup.bash 
+      - source $PWD/../../../devel/setup.bash 
       - export ns=robot_2
       - export robot_type=aliengo
       - export x_pos=0.0
